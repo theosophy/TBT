@@ -1,0 +1,26 @@
+body
+{
+    font-family: calibri;
+}
+
+h2
+{
+    text-align: center;
+}
+
+p
+{
+    text-indent: 1em;
+    text-align: justify;
+}
+
+p.ru
+{
+    color: gray;
+}
+
+div.footer p
+{
+    text-align: right;
+    font-style: italic;
+}
