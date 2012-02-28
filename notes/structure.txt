@@ -1,0 +1,19 @@
+book.xml                The top level description of a book.
+                        It contains the book title and references
+                        book chapters. The chapers themselves are
+                        located in separate xml files under
+                        the /chapters folder.
+
+compile.js              Generates a html file with the book.
+                        This script reads xml files with translations
+                        and composes a single human readable html file.
+
+styles.css              Defines styling for the generated html file.
+
+/chapters               This folder contains xml files with translations
+                        of chapters. One xml file contains translation of
+                        one chapter.
+
+/chapters/life1.xml     This xml file contains a translation of the chapter
+                        "Life 1". It can be an example how a translation
+                        of a chapter should look like.

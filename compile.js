@@ -30,9 +30,19 @@ function CreateXML(file)
 {
     var xml = WScript.CreateObject("Microsoft.XMLDOM")
     
+    xml.async = false
+    
     if (file && !xml.load(file))
-        throw "cannot load xml file: " + file
+    {
+        var msg
+        var err = xml.parseError
         
+        if (err)
+            msg = "\n" + err.line + ":" + err.linepos + " " + err.reason
+
+        throw "cannot load xml file: " + file + " " + msg
+    }
+
     return xml
 }
 
@@ -89,9 +99,8 @@ function Text.LoadViews(XMLNode)
         var lang = node.getAttribute("lang")
         var text = node.text
         
-        assert(lang, "lang is missing")
-        //warn(text, "text is missing")
-        assert(!views[lang], "a view for this lang already exists")
+        if (!lang)          throw "lang is missing"
+        if (views[lang])    throw "a view for this lang already exists"
         
         views[lang] = text
     }
@@ -187,7 +196,7 @@ function Book.LoadChapters(XML)
     }
     catch(e)
     {
-        throw "chapter " + i + "; " + e
+        println("cannot load chapter " + i + "; " + e)
     }
     
     return chapters
@@ -364,5 +373,5 @@ try
 }
 catch(e)
 {
-    WScript.StdErr.WriteLine("exception: " + e.message)
+    WScript.StdErr.WriteLine("exception: " + (e.message || e))
 }
