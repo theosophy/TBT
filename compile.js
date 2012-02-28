@@ -1,6 +1,9 @@
 function println(s)
 {
-    WScript.StdOut.WriteLine(s)
+    if (WScript.StdOut)
+        WScript.StdOut.WriteLine(s)
+    else
+        throw "stdout is null; " + s
 }
 
 function assert(f, s)
