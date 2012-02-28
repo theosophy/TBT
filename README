@@ -1,1 +1,49 @@
 The translation of "Lives of Alcyone".
+
+If you want to translate a chapter of the book, follow these steps:
+
+1. Go to https://sites.google.com/site/livesofalcyone/ and find what
+   you want to translate. This source is not mandatory, but it's more
+   complete than other sources I could find.
+   
+2. For example you have chosen chapter "Life 15" to translate.
+   Create a file /chapters/life15.xml and put the contents of the chapter
+   from the source to the created file. Use /chapters/life1.xml
+   as an example.
+   
+3. Open book.xml and add a reference to the created file:
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <book title="Lives of Alcyone">
+            <chapter contents="chapters/note.xml"/>
+            <chapter contents="chapters/foreword.xml"/>
+            <chapter contents="chapters/intro.xml"/>
+            <chapter contents="chapters/life1.xml"/>
+            
+            <chapter contents="chapters/life15.xml"/>
+        </book>
+        
+4. Open /chapters/life15.xml and add <view> tags with the translation.
+   Use /chapters/life1.xml as an example.
+   
+5. Run compile.js - it will generate book.html with the book contents.
+
+book.xml                The top level description of a book.
+                        It contains the book title and references
+                        book chapters. The chapers themselves are
+                        located in separate xml files under
+                        the /chapters folder.
+
+compile.js              Generates a html file with the book.
+                        This script reads xml files with translations
+                        and composes a single human readable html file.
+
+styles.css              Defines styling for the generated html file.
+
+/chapters               This folder contains xml files with translations
+                        of chapters. One xml file contains translation of
+                        one chapter.
+
+/chapters/life1.xml     This xml file contains a translation of the chapter
+                        "Life 1". It can be an example how a translation
+                        of a chapter should look like.
