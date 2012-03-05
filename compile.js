@@ -1,31 +1,16 @@
-function println(s)
+Logger =
 {
-    if (WScript.StdOut)
-        WScript.StdOut.WriteLine(s)
-    else
-        throw "stdout is null; " + s
-}
-
-function assert(f, s)
-{
-    if (!f)
+    errors: {},
+    
+    LogError: function(text)
     {
-        if (WScript.StdErr)
-            WScript.StdErr.WriteLine(s)
-
-        throw s
+        errors.push(text + "")
     }
 }
 
-function warn(f, s)
-{
-    if (!f)
-    {
-        if (WScript.StdErr)
-            WScript.StdErr.WriteLine(s)
-    }
-}
-
+//-----------------------------------------------------------------------------
+// Creates a XML DOM tree. Optionally loads contents from a xml file.
+//-----------------------------------------------------------------------------
 function CreateXML(file)
 {
     var xml = WScript.CreateObject("Microsoft.XMLDOM")
@@ -34,13 +19,9 @@ function CreateXML(file)
     
     if (file && !xml.load(file))
     {
-        var msg
         var err = xml.parseError
-        
-        if (err)
-            msg = "\n" + err.line + ":" + err.linepos + " " + err.reason
-
-        throw "cannot load xml file: " + file + " " + msg
+        throw "cannot load xml file: " + file + " " + 
+            (err ? "\n" + err.line + ":" + err.linepos + " " + err.reason : "")
     }
 
     return xml
@@ -106,10 +87,50 @@ function Text.LoadViews(XMLNode)
     }
     catch(e)
     {
-        throw "view " + i + "; " + e
+        Logger.LogError("<view> " + i + "; " + (e.message || e))
     }
     
     return views
+}
+
+//-----------------------------------------------------------------------------
+// Returns a Text loaded from a XML node.
+// If the node is written in form
+//
+//      <thenode contents="thefile.xml"/>
+//
+// then the Text will be loaded from "thefile.xml".
+// If the node is written in form
+//
+//      <thenode>
+//          <view lang="en">some text</view>
+//          <view lang="it">un testo</view>
+//      <thenode>
+//
+// then the Text will be loaded from the contents of the node and the node
+// may not have the "contents" attribute.
+//-----------------------------------------------------------------------------
+function Text.Load(node, options)
+{
+    if (!node)
+    {
+        if (options && options.optional) return null
+        throw "the Text node is optional, but does not exist"
+    }
+    
+    var contents = node.getAttribute("contents")
+    
+    if (contents)
+    {
+        if (node.firstChild)
+            throw 'a Text node with the "contents" attribute may not have any child nodes'
+
+        return new Text(CreateXML(contents).selectSingleNode("text"))
+    }
+    else
+    {
+        return new Text(node)
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -153,7 +174,7 @@ function Chapter.LoadParagraphs(XML)
     }
     catch(e)
     {
-        throw "text " + i + "; " + e
+        Logger.LogError("<text> " + i + "; " + (e.message || e))
     }
         
     return paragraphs
@@ -162,17 +183,20 @@ function Chapter.LoadParagraphs(XML)
 //-----------------------------------------------------------------------------
 // Book
 //
-//      chapters: array of Chapter
+//      chapters:   array of Chapter
+//      title:      Text
+//      keywords:   Text
+//      styles:     string (a path to a css file)
 //-----------------------------------------------------------------------------
 function Book(xmlFile)
 {
     var XML = CreateXML(xmlFile)
     var node = XML.selectSingleNode("book")
     
-    assert(node != null, "<book> is missing")
+    if (!node) throw "<book> is missing"
     
-    this.title      = node.getAttribute("title")
-    this.keywords   = node.getAttribute("keywords")
+    this.title      = Text.Load(node.selectSingleNode("title"))
+    this.keywords   = Text.Load(node.selectSingleNode("keywords"), {optional:true})
     this.styles     = node.getAttribute("styles")
     this.chapters   = this.LoadChapters(node)
 }
@@ -187,7 +211,7 @@ function Book.LoadChapters(XML)
     var nodes = XML.selectNodes("chapter")
     var chapters = []
     
-    assert(nodes.length, "<chapter> is missing")
+    if (!nodes.length) throw "<chapter> is missing"
     
     for (var i = 0; i < nodes.length; i++)
     try
@@ -196,26 +220,63 @@ function Book.LoadChapters(XML)
     }
     catch(e)
     {
-        println("cannot load chapter " + i + "; " + e)
+        Logger.LogError("<chapter> " + i + "; " + (e.message || e))
     }
     
     return chapters
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer
+// Calculates the progress of translations.
+//
+//  total:int       the number of paragraphs in the book
+//  lang[str]:int   the number of paragraphs in this language
 //-----------------------------------------------------------------------------
-function HTMLComposer(book)
+function Book.GetProgressInfo()
+{
+    var info = { total:0, lang:{} }
+
+    for (var i in this.chapters)
+    {
+        var paragraphs = this.chapters[i].paragraphs
+        
+        for (var j in paragraphs)
+        {
+            var n = 0
+            
+            for (var lang in paragraphs[j].views)
+                if (paragraphs[j].views[lang])
+                {
+                    info.lang[lang] = (info.lang[lang] || 0) + 1
+                    n++
+                }
+            
+            if (n) info.total++
+        }
+    }
+    
+    return info
+}
+
+//-----------------------------------------------------------------------------
+// Composer
+//
+//  book:           Book
+//  XMLDoc:         XML document
+//  langs:          (string -> bool) used languaged
+//  preferredLang:  the preferred language
+//-----------------------------------------------------------------------------
+function Composer(book)
 {
     this.book = book
 }
 
-HTMLComposer.prototype = HTMLComposer
+Composer.prototype = Composer
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.SaveAs
+// Composer.SaveAs
 //-----------------------------------------------------------------------------
-function HTMLComposer.SaveAs(HtmlFilePath)
+function Composer.SaveAs(HtmlFilePath)
 {
     this.XMLDoc = CreateXML()
     
@@ -231,6 +292,8 @@ function HTMLComposer.SaveAs(HtmlFilePath)
     htmlNode.appendChild(headNode)
     htmlNode.appendChild(bodyNode)
  
+    this.WriteGIT(bodyNode)
+    this.WriteProgress(bodyNode)
     this.WriteContentTypeTag(headNode)
     this.WriteBookTitle(headNode)
     this.WriteStyleSheet(headNode)
@@ -243,30 +306,80 @@ function HTMLComposer.SaveAs(HtmlFilePath)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.CreateNode
+// Composer.CreateNode
 //-----------------------------------------------------------------------------
-function HTMLComposer.CreateNode(name)
+function Composer.CreateNode(name)
 {
-    return this.XMLDoc.createNode(1, name, "")
+    return this.XMLDoc.createElement(name)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteKeywords
+// Returns a string with the preferred translation.
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteKeywords(XML)
+function Composer.GetPreferredTranslation(text)
 {
-    var node = this.CreateNode("meta")
-    
-    node.setAttribute("name", "keywords")
-    node.setAttribute("content", this.book.keywords)
-    
-    XML.appendChild(node)
+    return text.GetTranslation(this.preferredLang)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteStyleSheet
+// Add a link to the GIT repo, where the sources of this book can be modified.
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteStyleSheet(XML)
+function Composer.WriteGIT(parent)
+{
+    var node = this.CreateNode("a")
+    
+    node.setAttribute("class", "git")
+    node.setAttribute("href", "https://github.com/theosophy/lives-of-alcyone")
+    
+    node.text = "github"
+    
+    parent.appendChild(node)
+}
+
+//-----------------------------------------------------------------------------
+// Composer.WriteProgress
+//-----------------------------------------------------------------------------
+function Composer.WriteProgress(parent)
+{
+    var info = this.book.GetProgressInfo()
+    
+    var node = this.CreateNode("div")
+    parent.appendChild(node)
+    
+    node.setAttribute("class", "progress")
+    
+    var addp = function(dom, text)
+    {
+        var n = dom.CreateNode("p")
+        n.text = text
+        node.appendChild(n)
+    }
+    
+    for (var lang in info.lang)
+        addp(this, lang + " " + Math.round(100 * info.lang[lang] / info.total) +
+            "% " + info.lang[lang])
+}
+
+//-----------------------------------------------------------------------------
+// Composer.WriteKeywords
+//-----------------------------------------------------------------------------
+function Composer.WriteKeywords(XML)
+{
+    if (this.book.keywords)
+    {
+        var node = this.CreateNode("meta")
+        
+        node.setAttribute("name", "keywords")
+        node.setAttribute("content", this.GetPreferredTranslation(this.book.keywords))
+        
+        XML.appendChild(node)
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Composer.WriteStyleSheet
+//-----------------------------------------------------------------------------
+function Composer.WriteStyleSheet(XML)
 {
     var node = this.CreateNode("link")
     
@@ -278,9 +391,9 @@ function HTMLComposer.WriteStyleSheet(XML)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteContentTypeTag
+// Composer.WriteContentTypeTag
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteContentTypeTag(XML)
+function Composer.WriteContentTypeTag(XML)
 {
     var node = this.CreateNode("meta")
     
@@ -291,19 +404,19 @@ function HTMLComposer.WriteContentTypeTag(XML)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteBookTitle
+// Composer.WriteBookTitle
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteBookTitle(XML)
+function Composer.WriteBookTitle(XML)
 {
     var node = this.CreateNode("title")
-    node.text = this.book.title
+    node.text = this.GetPreferredTranslation(this.book.title)
     XML.appendChild(node)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteChapters
+// Composer.WriteChapters
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteChapters(XML)
+function Composer.WriteChapters(XML)
 {
     for (var i in this.book.chapters)
     {
@@ -315,19 +428,19 @@ function HTMLComposer.WriteChapters(XML)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteChapterTitle
+// Composer.WriteChapterTitle
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteChapterTitle(XML, title)
+function Composer.WriteChapterTitle(XML, title)
 {
     var node = this.CreateNode("h2")
-    node.text = title.GetTranslation("ru")
+    node.text = this.GetPreferredTranslation(title)
     XML.appendChild(node)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteParagraphs
+// Composer.WriteParagraphs
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteParagraphs(XML, paragraphs)
+function Composer.WriteParagraphs(XML, paragraphs)
 {
     for (var i in paragraphs)
     {
@@ -344,11 +457,12 @@ function HTMLComposer.WriteParagraphs(XML, paragraphs)
 }
 
 //-----------------------------------------------------------------------------
-// HTMLComposer.WriteLangViews
+// Composer.WriteLangViews
 //-----------------------------------------------------------------------------
-function HTMLComposer.WriteLangViews(XML, views)
+function Composer.WriteLangViews(XML, views)
 {
     for (var lang in views)
+    if (this.IsLangUsed(lang))
     {
         var text = views[lang]
         var node = this.CreateNode("p")
@@ -361,17 +475,36 @@ function HTMLComposer.WriteLangViews(XML, views)
 }
 
 //-----------------------------------------------------------------------------
+// Tells whether a language should be written in the output.
+//-----------------------------------------------------------------------------
+function Composer.IsLangUsed(lang)
+{
+    return !this.langs || !!this.langs[lang]
+}
+
+//-----------------------------------------------------------------------------
 // Main
 //-----------------------------------------------------------------------------
 
-try
+function Translate()
 {
-    var b = new Book("book.xml")
-    var c = new HTMLComposer(b)
+    var book = new Book("book.xml")
+    var comp = new Composer(book)
     
-    c.SaveAs("book.html")
+    // all languages
+    comp.langs = null
+    comp.preferredLang = "ru"
+    comp.SaveAs("book-all.html")
+    
+    // en only
+    comp.langs = {en:true}
+    comp.preferredLang = "en"
+    comp.SaveAs("book-en.html")
+    
+    // ru only
+    comp.langs = {ru:true}
+    comp.preferredLang = "ru"
+    comp.SaveAs("book-ru.html")
 }
-catch(e)
-{
-    WScript.StdErr.WriteLine("exception: " + (e.message || e))
-}
+
+Translate()
