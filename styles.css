@@ -14,13 +14,40 @@ p
     text-align: justify;
 }
 
-p.ru
+div
 {
-    color: gray;
+    border: 1pt solid lightgray;
+    margin-top: 1pt;
 }
 
 div.footer p
 {
     text-align: right;
     font-style: italic;
+}
+
+.progress
+{
+    position: absolute;
+    right: 10pt;
+    top: 10pt;
+    text-align: right;
+}
+
+.progress p
+{
+    display: inline;
+    margin-left: 2em;
+    color: lightgray;
+    font-size: 8pt;
+}
+
+a.git
+{
+    position: absolute;
+    left: 10pt;
+    top: 10pt;
+    color: lightgray;
+    text-decoration: none;
+    font-size: 8pt;
 }

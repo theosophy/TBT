@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<book title="Жизни Алкиона" styles="styles.css" keywords="Ледбитер, Безант, Алкион">
+<book styles="styles.css">
+
+<title>
+    <view lang="en">Lives of Alcyone</view>
+    <view lang="ru">Жизни Алкиона</view>
+</title>
+
+<keywords contents="keywords.xml"/>
 
 <chapter contents="chapters/note.xml"/>
 <chapter contents="chapters/foreword.xml"/>
