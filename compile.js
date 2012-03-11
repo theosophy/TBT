@@ -479,7 +479,7 @@ function Composer.WriteLangViews(XML, views)
 //-----------------------------------------------------------------------------
 function Composer.IsLangUsed(lang)
 {
-    return !this.langs || !!this.langs[lang]
+    return !this.langs || !!this.langs[lang] || lang == 'any'
 }
 
 //-----------------------------------------------------------------------------
