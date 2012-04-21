@@ -1,42 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <book styles="styles.css">
+    <title>
+        <view lang="en">Man: Whence, How and Whither</view>
+        <view lang="ru">Человек: Откуда, Как и Куда</view>
+    </title>
 
-<title>
-    <view lang="en">Man: Whence, How and Whither</view>
-    <view lang="ru">Человек: Откуда, Как и Куда</view>
-</title>
+    <keywords contents="keywords.xml"/>
 
-<keywords contents="keywords.xml"/>
-
-<chapter contents="chapters/foreword.xml"/>
-<chapter contents="chapters/characters.xml"/>
-<chapter contents="chapters/intro.xml"/>
-<chapter contents="chapters/chap1.xml"/>
-<chapter contents="chapters/chap2.xml"/>
-<chapter contents="chapters/chap3.xml"/>
-<chapter contents="chapters/chap4.xml"/>
-<chapter contents="chapters/chap5.xml"/>
-<chapter contents="chapters/chap6.xml"/>
-<chapter contents="chapters/chap7.xml"/>
-<chapter contents="chapters/chap8.xml"/>
-<chapter contents="chapters/chap9.xml"/>
-<chapter contents="chapters/chap10.xml"/>
-<chapter contents="chapters/chap11.xml"/>
-<chapter contents="chapters/chap14.xml"/>
-<chapter contents="chapters/chap15.xml"/>
-<chapter contents="chapters/chap16.xml"/>
-<chapter contents="chapters/chap17.xml"/>
-<chapter contents="chapters/chap18.xml"/>
-<chapter contents="chapters/chap19.xml"/>
-<chapter contents="chapters/chap20.xml"/>
-<chapter contents="chapters/chap21.xml"/>
-<chapter contents="chapters/chap22-foreword.xml"/>
-<chapter contents="chapters/chap22.xml"/>
-<chapter contents="chapters/chap23.xml"/>
-<chapter contents="chapters/chap24.xml"/>
-<chapter contents="chapters/chap25.xml"/>
-<chapter contents="chapters/chap26.xml"/>
-<chapter contents="chapters/chap27.xml"/>
-<chapter contents="chapters/appendix.xml"/>
-<chapter contents="chapters/diagrams.xml"/>
+    <chapter contents="chapters/foreword.xml"/>
+    <chapter contents="chapters/characters.xml"/>
+    <chapter contents="chapters/intro.xml"/>
+    <chapter contents="chapters/chap1.xml"/>
+    <chapter contents="chapters/chap2.xml"/>
+    <chapter contents="chapters/chap3.xml"/>
+    <chapter contents="chapters/chap4.xml"/>
+    <chapter contents="chapters/chap5.xml"/>
+    <chapter contents="chapters/chap6.xml"/>
+    <chapter contents="chapters/chap7.xml"/>
+    <chapter contents="chapters/chap8.xml"/>
+    <chapter contents="chapters/chap9.xml"/>
+    <chapter contents="chapters/chap10.xml"/>
+    <chapter contents="chapters/chap11.xml"/>
+    <chapter contents="chapters/chap14.xml"/>
+    <chapter contents="chapters/chap15.xml"/>
+    <chapter contents="chapters/chap16.xml"/>
+    <chapter contents="chapters/chap17.xml"/>
+    <chapter contents="chapters/chap18.xml"/>
+    <chapter contents="chapters/chap19.xml"/>
+    <chapter contents="chapters/chap20.xml"/>
+    <chapter contents="chapters/chap21.xml"/>
+    <chapter contents="chapters/chap22-foreword.xml"/>
+    <chapter contents="chapters/chap22.xml"/>
+    <chapter contents="chapters/chap23.xml"/>
+    <chapter contents="chapters/chap24.xml"/>
+    <chapter contents="chapters/chap25.xml"/>
+    <chapter contents="chapters/chap26.xml"/>
+    <chapter contents="chapters/chap27.xml"/>
+    <chapter contents="chapters/appendix.xml"/>
+    <chapter contents="chapters/diagrams.xml"/>
 </book>
