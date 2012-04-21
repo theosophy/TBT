@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+<title>
+<view lang="en">Translator Notes</view>
+<view lang="ru">Замечание переводчика</view>
+</title>
+
+<text>
+<view lang="en">
+Those who wish to participate in translating the book, or improve the quality of the existing translation, may edit it on <a href="https://github.com/theosophy/lives-of-alcyone">github</a>.
+</view>
+<view lang="ru">
+Все желающие принять участие в переводе этой книги, или в улучшении имеющегося перевода, могут отредактировать его на <a href="https://github.com/theosophy/lives-of-alcyone">гитхабе</a>.
+</view>
+</text>
+</body>

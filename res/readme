@@ -1,0 +1,1 @@
+Folder /res keeps generated html files. When compile.js is run, it reads xml files from /src with books contents and creates html files in /res.

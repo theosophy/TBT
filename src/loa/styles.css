@@ -8,10 +8,17 @@ h2
     text-align: center;
 }
 
+div
+{
+}
+
 p
 {
     text-indent: 1em;
     text-align: justify;
+    width: 50%;
+    padding: 0.5em;
+    display: table-cell;
 }
 
 div.footer p

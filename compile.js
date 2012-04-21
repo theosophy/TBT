@@ -1,15 +1,51 @@
 Logger =
 {
-    errors: {},
+    errors: [],
     
     LogError: function(text)
     {
-        errors.push(text + "")
+        Logger.errors.push(text + "")
     }
 }
 
 //-----------------------------------------------------------------------------
-// Creates a XML DOM tree. Optionally loads contents from a xml file.
+// File
+//-----------------------------------------------------------------------------
+function File(path, opts)
+{
+    var fso = WScript.CreateObject("Scripting.FileSystemObject")
+    
+    if (opts == 'wt')    
+    {
+        this.stream = new ActiveXObject("ADODB.Stream")
+        this.stream.Open()
+        this.stream.CharSet = "UTF-8"
+        this.path = path
+    }
+    else
+        throw "options '" + opts + "' not supported"
+}
+
+File.prototype = File
+
+//-----------------------------------------------------------------------------
+// Writes a string to the file.
+//-----------------------------------------------------------------------------
+function File.Write(text)
+{
+    this.stream.WriteText(text)
+}
+
+//-----------------------------------------------------------------------------
+// Closes the file.
+//-----------------------------------------------------------------------------
+function File.Close()
+{
+    this.stream.SaveToFile(this.path, 2)
+}
+
+//-----------------------------------------------------------------------------
+// Creates a parent DOM tree. Optionally loads contents from a xml file.
 //-----------------------------------------------------------------------------
 function CreateXML(file)
 {
@@ -94,7 +130,7 @@ function Text.LoadViews(XMLNode)
 }
 
 //-----------------------------------------------------------------------------
-// Returns a Text loaded from a XML node.
+// Returns a Text loaded from a parent node.
 // If the node is written in form
 //
 //      <thenode contents="thefile.xml"/>
@@ -153,18 +189,18 @@ Chapter.prototype = Chapter
 //-----------------------------------------------------------------------------
 // Chapter.Initialize
 //-----------------------------------------------------------------------------
-function Chapter.Initialize(XML)
+function Chapter.Initialize(parent)
 {
-    this.title      = new Text(XML.selectSingleNode("title"))
-    this.paragraphs = this.LoadParagraphs(XML)
+    this.title      = new Text(parent.selectSingleNode("title"))
+    this.paragraphs = this.LoadParagraphs(parent)
 }
 
 //-----------------------------------------------------------------------------
 // Chapter.LoadParagraphs
 //-----------------------------------------------------------------------------
-function Chapter.LoadParagraphs(XML)
+function Chapter.LoadParagraphs(parent)
 {
-    var nodes = XML.selectNodes("text")
+    var nodes = parent.selectNodes("text")
     var paragraphs = []
     
     for (var i = 0; i < nodes.length; i++)
@@ -190,8 +226,8 @@ function Chapter.LoadParagraphs(XML)
 //-----------------------------------------------------------------------------
 function Book(xmlFile)
 {
-    var XML = CreateXML(xmlFile)
-    var node = XML.selectSingleNode("book")
+    var parent = CreateXML(xmlFile)
+    var node = parent.selectSingleNode("book")
     
     if (!node) throw "<book> is missing"
     
@@ -206,9 +242,9 @@ Book.prototype = Book
 //-----------------------------------------------------------------------------
 // Book.LoadChapters
 //-----------------------------------------------------------------------------
-function Book.LoadChapters(XML)
+function Book.LoadChapters(parent)
 {
-    var nodes = XML.selectNodes("chapter")
+    var nodes = parent.selectNodes("chapter")
     var chapters = []
     
     if (!nodes.length) throw "<chapter> is missing"
@@ -259,10 +295,135 @@ function Book.GetProgressInfo()
 }
 
 //-----------------------------------------------------------------------------
+// XMLNode
+//
+//  name            string
+//  attributes      map <string, string>
+//  subnodes        array <XMLNode or string>
+//
+// Example:
+//
+//  <p style="some-css-style">The Text</p>
+//
+//  var p = new XMLNode('p')
+//  p.attributes['style'] = 'some-css-style'
+//  p.subnodes.push('The Text')
+//-----------------------------------------------------------------------------
+function XMLNode(name, attributes)
+{
+    if (!name) throw "the name of a parent node cannot be empty"
+    
+    this.name       = name
+    this.attributes = attributes || {}
+    this.subnodes   = []
+}
+
+XMLNode.prototype = XMLNode
+
+//-----------------------------------------------------------------------------
+// Adds a sub node. The sub node can be a string.
+//-----------------------------------------------------------------------------
+function XMLNode.push(node)
+{
+    if (this.subnodes)
+        this.subnodes.push(node)
+    else
+        this.subnodes = [node]
+}
+
+//-----------------------------------------------------------------------------
+// XMLDoc
+//
+//  nodes           array <XMLNode>
+//-----------------------------------------------------------------------------
+function XMLDoc()
+{
+    this.nodes = []
+}
+
+XMLDoc.prototype = XMLDoc
+
+//-----------------------------------------------------------------------------
+// Serializes itself using a function that prints a string:
+//
+//  puts(text)
+//
+//
+//  opts.format     bool (false)
+//  opts.indent     int (0)
+//-----------------------------------------------------------------------------
+function XMLDoc.Serialize(puts, opts)
+{
+    var opts = opts || {}
+    
+    opts.indent = opts.indent || 0
+    opts.format = opts.format || false
+    
+    var eoln = '\n'
+    
+    var putindent = function(n)
+    {
+        var s = ''
+        
+        for (var i = 0; i < n; i++)
+            s += ' '
+            
+        puts(s)
+    }
+    
+    var putnode = function(node, indent)
+    {
+        if (typeof(node) == 'string')
+        {
+            putindent(indent)
+            puts(node)
+        }
+        else
+        {
+            putindent(indent)
+            puts('<' + node.name)
+            
+            for (var attr in node.attributes)
+            {
+                var s = node.attributes[attr].replace('"', '&quot;')
+                puts(' ' + attr + '="' + s + '"')
+            }
+            
+            var subnodes = node.subnodes
+            
+            if (opts.format && subnodes && subnodes.length > 0)
+            {
+                puts('>')
+                puts(eoln)
+                
+                for (var i in subnodes)
+                {
+                    putnode(subnodes[i], indent + opts.indent)
+                }
+                
+                putindent(indent)
+                puts('</' + node.name + '>')                
+            }
+            else
+            {
+                puts('/>')
+            }
+        }
+        
+        if (opts.format)
+            puts(eoln)
+    }
+    
+    for (var i in this.nodes)
+    {
+        putnode(this.nodes[i], 0)
+    }
+}
+
+//-----------------------------------------------------------------------------
 // Composer
 //
 //  book:           Book
-//  XMLDoc:         XML document
 //  langs:          (string -> bool) used languaged
 //  preferredLang:  the preferred language
 //-----------------------------------------------------------------------------
@@ -276,23 +437,19 @@ Composer.prototype = Composer
 //-----------------------------------------------------------------------------
 // Composer.SaveAs
 //-----------------------------------------------------------------------------
-function Composer.SaveAs(HtmlFilePath)
+function Composer.SaveAs(HTMLFileName)
 {
-    this.XMLDoc = CreateXML()
+    var doc = new XMLDoc()
     
-    var XML = this.XMLDoc
+    var htmlNode = new XMLNode('html')
+    var headNode = new XMLNode('head')
+    var bodyNode = new XMLNode('body')
     
-    var htmlNode = XML.createElement("html")
-    var headNode = XML.createElement("head")
-    var bodyNode = XML.createElement("body")
-    var commNode = XML.createComment("This file is generated by a script")
-    
-    XML.appendChild(commNode)
-    XML.appendChild(htmlNode)
-    htmlNode.appendChild(headNode)
-    htmlNode.appendChild(bodyNode)
+    doc.nodes.push('<!-- This file is generated by a script -->')
+    doc.nodes.push(htmlNode)
+    htmlNode.push(headNode)
+    htmlNode.push(bodyNode)
  
-    this.WriteGIT(bodyNode)
     this.WriteProgress(bodyNode)
     this.WriteContentTypeTag(headNode)
     this.WriteBookTitle(headNode)
@@ -300,17 +457,13 @@ function Composer.SaveAs(HtmlFilePath)
     this.WriteKeywords(headNode)
     this.WriteChapters(bodyNode)
     
-    XML.save(HtmlFilePath)
+    var file = new File(HTMLFileName, 'wt')
     
-    this.XMLDoc = null
-}
-
-//-----------------------------------------------------------------------------
-// Composer.CreateNode
-//-----------------------------------------------------------------------------
-function Composer.CreateNode(name)
-{
-    return this.XMLDoc.createElement(name)
+    doc.Serialize(
+        function(s) { file.Write(s) },
+        { indent:2, format:true })
+    
+    file.Close()
 }
 
 //-----------------------------------------------------------------------------
@@ -322,156 +475,135 @@ function Composer.GetPreferredTranslation(text)
 }
 
 //-----------------------------------------------------------------------------
-// Add a link to the GIT repo, where the sources of this book can be modified.
-//-----------------------------------------------------------------------------
-function Composer.WriteGIT(parent)
-{
-    var node = this.CreateNode("a")
-    
-    node.setAttribute("class", "git")
-    node.setAttribute("href", "https://github.com/theosophy/lives-of-alcyone")
-    
-    node.text = "github"
-    
-    parent.appendChild(node)
-}
-
-//-----------------------------------------------------------------------------
 // Composer.WriteProgress
 //-----------------------------------------------------------------------------
 function Composer.WriteProgress(parent)
 {
     var info = this.book.GetProgressInfo()
     
-    var node = this.CreateNode("div")
-    parent.appendChild(node)
+    var node = new XMLNode("div", { 'class':'progress' })
     
-    node.setAttribute("class", "progress")
-    
-    var addp = function(dom, text)
-    {
-        var n = dom.CreateNode("p")
-        n.text = text
-        node.appendChild(n)
-    }
+    parent.push(node)
     
     for (var lang in info.lang)
-        addp(this, lang + " " + Math.round(100 * info.lang[lang] / info.total) +
-            "% " + info.lang[lang])
+    {
+        var p = new XMLNode('p')
+        node.push(p)
+        p.push(lang + " " + Math.round(100 * info.lang[lang] / info.total) + "% " + info.lang[lang])
+    }
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteKeywords
 //-----------------------------------------------------------------------------
-function Composer.WriteKeywords(XML)
+function Composer.WriteKeywords(parent)
 {
     if (this.book.keywords)
     {
-        var node = this.CreateNode("meta")
-        
-        node.setAttribute("name", "keywords")
-        node.setAttribute("content", this.GetPreferredTranslation(this.book.keywords))
-        
-        XML.appendChild(node)
+        parent.push(
+            new XMLNode("meta",
+            {
+                "name":     'keywords',
+                "content":  this.GetPreferredTranslation(this.book.keywords)
+            })
+        )
     }
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteStyleSheet
 //-----------------------------------------------------------------------------
-function Composer.WriteStyleSheet(XML)
+function Composer.WriteStyleSheet(parent)
 {
-    var node = this.CreateNode("link")
-    
-    node.setAttribute("rel", "stylesheet")
-    node.setAttribute("type", "text/css")
-    node.setAttribute("href", this.book.styles)
-    
-    XML.appendChild(node)
+    parent.push(
+        new XMLNode("link",
+        {
+            "rel":  "stylesheet",
+            "type": "text/css",
+            "href": this.book.styles
+        })
+    )
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteContentTypeTag
 //-----------------------------------------------------------------------------
-function Composer.WriteContentTypeTag(XML)
+function Composer.WriteContentTypeTag(parent)
 {
-    var node = this.CreateNode("meta")
-    
-    node.setAttribute("http-equiv", "Content-Type")
-    node.setAttribute("content", "text/html; charset=utf-8")
-    
-    XML.appendChild(node)
+    parent.push(
+        new XMLNode('meta',
+        {
+            "http-equiv":   "Content-Type",
+            "content":      "text/html; charset=utf-8"
+        })
+    )
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteBookTitle
 //-----------------------------------------------------------------------------
-function Composer.WriteBookTitle(XML)
+function Composer.WriteBookTitle(parent)
 {
-    var node = this.CreateNode("title")
-    node.text = this.GetPreferredTranslation(this.book.title)
-    XML.appendChild(node)
+    var node = new XMLNode("title")
+    node.push(this.GetPreferredTranslation(this.book.title))
+    parent.push(node)
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteChapters
 //-----------------------------------------------------------------------------
-function Composer.WriteChapters(XML)
+function Composer.WriteChapters(parent)
 {
     for (var i in this.book.chapters)
     {
         var chapter = this.book.chapters[i]
         
-        this.WriteChapterTitle(XML, chapter.title)
-        this.WriteParagraphs(XML, chapter.paragraphs)
+        this.WriteChapterTitle(parent, chapter.title)
+        this.WriteParagraphs(parent, chapter.paragraphs)
     }
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteChapterTitle
 //-----------------------------------------------------------------------------
-function Composer.WriteChapterTitle(XML, title)
+function Composer.WriteChapterTitle(parent, title)
 {
-    var node = this.CreateNode("h2")
-    node.text = this.GetPreferredTranslation(title)
-    XML.appendChild(node)
+    var node = new XMLNode("h2")
+    node.push(this.GetPreferredTranslation(title))
+    parent.push(node)
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteParagraphs
 //-----------------------------------------------------------------------------
-function Composer.WriteParagraphs(XML, paragraphs)
+function Composer.WriteParagraphs(parent, paragraphs)
 {
     for (var i in paragraphs)
     {
         var text = paragraphs[i]
-        var root = this.CreateNode("div")
-        
-        if (text.style)
-            root.setAttribute("class", text.style)
+        var root = new XMLNode("div", text.style ? { 'class':text.style } : {})
 
         this.WriteLangViews(root, text.views)
         
-        XML.appendChild(root)
+        parent.push(root)
     }
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteLangViews
 //-----------------------------------------------------------------------------
-function Composer.WriteLangViews(XML, views)
+function Composer.WriteLangViews(parent, views)
 {
     for (var lang in views)
-    if (this.IsLangUsed(lang))
-    {
-        var text = views[lang]
-        var node = this.CreateNode("p")
-        
-        node.text = Text.Preprocess(text)
-        node.setAttribute("class", lang)
-        
-        XML.appendChild(node)
-    }
+        if (this.IsLangUsed(lang))
+        {
+            var text = views[lang]
+            var node = new XMLNode("p", { 'class':lang })
+            
+            node.push(Text.Preprocess(text))
+            
+            parent.push(node)
+        }
 }
 
 //-----------------------------------------------------------------------------
@@ -491,15 +623,15 @@ function Translate()
     var book = new Book("book.xml")
     var comp = new Composer(book)
     
+    // en only
+    comp.langs = {en:true}
+    comp.preferredLang = "en"
+    comp.SaveAs("book-en.html")    
+    
     // all languages
     comp.langs = null
     comp.preferredLang = "ru"
     comp.SaveAs("book-all.html")
-    
-    // en only
-    comp.langs = {en:true}
-    comp.preferredLang = "en"
-    comp.SaveAs("book-en.html")
     
     // ru only
     comp.langs = {ru:true}
