@@ -725,16 +725,14 @@ function Composer.WriteParagraphs(parent, paragraphs)
 //-----------------------------------------------------------------------------
 function Composer.WriteLangViews(parent, views)
 {
-    for (var lang in views)
-        if (this.IsLangUsed(lang))
-        {
-            var text = views[lang]
-            var node = new XMLNode("td", { 'class':lang })
-            
-            node.push(Text.Preprocess(text))
-            
-            parent.push(node)
-        }
+    for (var lang in this.langs)
+    {
+        var text = views[lang]
+        var str = text ? Text.Preprocess(text) : ""
+        var node = new XMLNode("td", { 'class':lang })            
+        node.push(str)            
+        parent.push(node)
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -825,4 +823,4 @@ function Exec(f, c)
     }
 }
 
-Exec(Main, false)
+Exec(Main, true)
