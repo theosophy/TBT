@@ -57,7 +57,7 @@ function BuildPath(items)
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
     var path = items[0]
     
-    for (var i = 1; i < items; i++)
+    for (var i = 1; i < items.length; i++)
         path = fs.BuildPath(path, items[i])
         
     return path
@@ -85,7 +85,7 @@ function GetSubFolders(dir)
     var paths = []
 
     for (var i = new Enumerator(items); !i.atEnd(); i.moveNext())
-        paths[paths.length] = i.item()
+        paths.push(i.item())
 
     return paths
 }
@@ -760,20 +760,49 @@ function Translate(bookxml, bookhtml, options)
     comp.SaveAs(bookhtml)
 }
 
-function println(s)
+//-----------------------------------------------------------------------------
+// BuildBookName
+//-----------------------------------------------------------------------------
+function BuildBookName(t)
 {
-    WScript.StdOut.WriteLine(s)
+    var name = "book"
+
+    for (var i in t.langs)
+        name = name + "-" + i
+
+    return name
+}
+
+//-----------------------------------------------------------------------------
+// Translates all books in a folder.
+//-----------------------------------------------------------------------------
+function TranslateAll(srcdir, resdir, translations)
+{
+    var bookdirs = GetSubFolders(srcdir)
+
+    for (var i in bookdirs)
+    {
+        var bookxml = BuildPath([bookdirs[i].Path, "book.xml"])
+        var htmldir = BuildPath([resdir, bookdirs[i].Name])
+        
+        for (var t in translations)
+        {
+            var bookhtml = BuildPath([htmldir, BuildBookName(translations[t]) + ".html"])
+            Translate(bookxml, bookhtml, translations[t])
+        }
+    }
 }
 
 function Main()
 {
-    Translate("src/loa/book.xml", "res/loa/book-en.html", {langs:{en:true}, preferredLang:"en"})
-    Translate("src/loa/book.xml", "res/loa/book-ru.html", {langs:{ru:true}, preferredLang:"ru"})
-    Translate("src/loa/book.xml", "res/loa/book-en-ru.html", {langs:{en:true,ru:true}, preferredLang:"ru"})
+    var translations =
+    [
+        { langs:{ en:true }, preferredLang:"en" },
+        { langs:{ ru:true }, preferredLang:"ru" },
+        { langs:{ en:true, ru:true }, preferredLang:"ru" }
+    ]
 
-    Translate("src/manwhw/book.xml", "res/manwhw/book-en.html", {langs:{en:true}, preferredLang:"en"})
-    Translate("src/manwhw/book.xml", "res/manwhw/book-ru.html", {langs:{ru:true}, preferredLang:"ru"})
-    Translate("src/manwhw/book.xml", "res/manwhw/book-en-ru.html", {langs:{en:true,ru:true}, preferredLang:"ru"})
+    TranslateAll("src/", "res/", translations)
 }
 
 function Exec(f, c)
@@ -791,4 +820,4 @@ function Exec(f, c)
     }
 }
 
-Exec(Main, true)
+Exec(Main, false)
