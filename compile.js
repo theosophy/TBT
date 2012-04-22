@@ -1,11 +1,93 @@
-Logger =
+//-----------------------------------------------------------------------------
+// Finds a file that corresponds to the given path.
+//-----------------------------------------------------------------------------
+function ResolvePath(path, locations)
 {
-    errors: [],
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
     
-    LogError: function(text)
+    if (fs.FileExists(path))
+        return fs.GetAbsolutePathName(path)
+        
+    if (locations)
+        for (var i = 0; i < locations.length; i++)
+        {
+            var newpath = fs.BuildPath(locations[i], path)
+            if (fs.FileExists(newpath))
+                return fs.GetAbsolutePathName(newpath)
+        }
+        
+    return null
+}
+
+//-----------------------------------------------------------------------------
+// This function creates needed folders if they do not exist.
+//-----------------------------------------------------------------------------
+function CreateParentFolders(path)
+{
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
+    var abspath = fs.GetAbsolutePathName(path)    
+    var dirs = []
+
+    for (var dir = fs.GetParentFolderName(abspath); !fs.FolderExists(dir);)
     {
-        Logger.errors.push(text + "")
+        dirs.push(dir)
+        dir = fs.GetParentFolderName(dir)
     }
+
+    for (var i = dirs.length - 1; i >= 0; i--)
+        fs.CreateFolder(dirs[i])
+}
+
+//-----------------------------------------------------------------------------
+// Returns a string that contains contents of a text file.
+//-----------------------------------------------------------------------------
+function GetFileContents(file)
+{
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
+    var tf = fs.OpenTextFile(file, 1 /* read only */)
+
+    return tf.ReadAll()
+}
+
+//-----------------------------------------------------------------------------
+// Constructs a path using the correct path delimiter.
+//-----------------------------------------------------------------------------
+function BuildPath(items)
+{
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
+    var path = items[0]
+    
+    for (var i = 1; i < items; i++)
+        path = fs.BuildPath(path, items[i])
+        
+    return path
+}
+
+//-----------------------------------------------------------------------------
+// Returns the current dir path.
+//-----------------------------------------------------------------------------
+function GetCurrentDir()
+{
+    return WScript.CreateObject("WScript.Shell").CurrentDirectory
+}
+
+//-----------------------------------------------------------------------------
+// Returns an array of paths of subfolders.
+//-----------------------------------------------------------------------------
+function GetSubFolders(dir)
+{
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
+
+    if (!fs.FolderExists(dir))
+        return []
+
+    var items = fs.GetFolder(dir).SubFolders
+    var paths = []
+
+    for (var i = new Enumerator(items); !i.atEnd(); i.moveNext())
+        paths[paths.length] = i.item()
+
+    return paths
 }
 
 //-----------------------------------------------------------------------------
@@ -45,7 +127,7 @@ function File.Close()
 }
 
 //-----------------------------------------------------------------------------
-// Creates a parent DOM tree. Optionally loads contents from a xml file.
+// Creates a XML DOM tree. Optionally loads contents from a xml file.
 //-----------------------------------------------------------------------------
 function CreateXML(file)
 {
@@ -66,13 +148,17 @@ function CreateXML(file)
 //-----------------------------------------------------------------------------
 // Text
 //
-//      views: map from string (language) to string (text)
-//      style: string (e.g. "footer")
+//      views:  <language, text>
+//      style:  string (e.g. "footer")
+//      path:   path to a folder where the xml file with this object is located
 //-----------------------------------------------------------------------------
-function Text(XMLNode)
+function Text(node, path)
 {
-    this.style = XMLNode.getAttribute("class")
-    this.views = this.LoadViews(XMLNode)
+    if (!path) throw "path is not specified"
+    
+    this.style = node.getAttribute("class")
+    this.views = this.LoadViews(node)
+    this.path  = path
 }
 
 Text.prototype = Text
@@ -96,7 +182,7 @@ function Text.Preprocess(text)
 {
     var s = text || ""
     
-    s = s.replace(/\s*-+\s*/, " - ")
+    s = s.replace(/\s+-+\s+/, "&nbsp;&mdash;&nbsp;")
     
     return s
 }
@@ -123,7 +209,7 @@ function Text.LoadViews(XMLNode)
     }
     catch(e)
     {
-        Logger.LogError("<view> " + i + "; " + (e.message || e))
+        throw "<view> " + i + "; " + (e.message || e)
     }
     
     return views
@@ -145,8 +231,11 @@ function Text.LoadViews(XMLNode)
 //
 // then the Text will be loaded from the contents of the node and the node
 // may not have the "contents" attribute.
+//
+//  node:   an xml node that represents this Text object
+//  path:   path to a folder where the xml file with this object is located
 //-----------------------------------------------------------------------------
-function Text.Load(node, options)
+function Text.Load(node, path, options)
 {
     if (!node)
     {
@@ -161,11 +250,14 @@ function Text.Load(node, options)
         if (node.firstChild)
             throw 'a Text node with the "contents" attribute may not have any child nodes'
 
-        return new Text(CreateXML(contents).selectSingleNode("text"))
+        var resolvedPath = ResolvePath(contents, [path])
+        var textNode = CreateXML(resolvedPath).selectSingleNode("text")
+        
+        return new Text(textNode, resolvedPath)
     }
     else
     {
-        return new Text(node)
+        return new Text(node, path)
     }
 }
 
@@ -174,14 +266,21 @@ function Text.Load(node, options)
 //
 //      title:      Text
 //      paragraphs: array of Text
+//      path:       path to a folder where the xml file with this object is located
 //-----------------------------------------------------------------------------
-function Chapter(XMLNode)
+function Chapter(XMLNode, path)
 {
     var external = XMLNode.getAttribute("contents")
 
-    this.Initialize(external ?
-        CreateXML(external).selectSingleNode("body") :
-        XMLNode)
+    if (!external)
+        this.Initialize(XMLNode, path)
+    else
+    {
+        var resolvedPath = ResolvePath(external, [path])
+        var chapterNode = CreateXML(resolvedPath).selectSingleNode("body")
+        
+        this.Initialize(chapterNode, resolvedPath)
+    }
 }
 
 Chapter.prototype = Chapter
@@ -189,9 +288,10 @@ Chapter.prototype = Chapter
 //-----------------------------------------------------------------------------
 // Chapter.Initialize
 //-----------------------------------------------------------------------------
-function Chapter.Initialize(parent)
+function Chapter.Initialize(parent, path)
 {
-    this.title      = new Text(parent.selectSingleNode("title"))
+    this.path       = path
+    this.title      = new Text(parent.selectSingleNode("title"), path)
     this.paragraphs = this.LoadParagraphs(parent)
 }
 
@@ -206,11 +306,11 @@ function Chapter.LoadParagraphs(parent)
     for (var i = 0; i < nodes.length; i++)
     try
     {
-        paragraphs.push(new Text(nodes[i]))
+        paragraphs.push(new Text(nodes[i], this.path))
     }
     catch(e)
     {
-        Logger.LogError("<text> " + i + "; " + (e.message || e))
+        throw "<text> " + i + "; " + (e.message || e)
     }
         
     return paragraphs
@@ -223,21 +323,35 @@ function Chapter.LoadParagraphs(parent)
 //      title:      Text
 //      keywords:   Text
 //      styles:     string (a path to a css file)
+//      path:       path to a folder where the xml file with this object is located
 //-----------------------------------------------------------------------------
-function Book(xmlFile)
+function Book(xmlFile, path)
 {
     var parent = CreateXML(xmlFile)
     var node = parent.selectSingleNode("book")
     
     if (!node) throw "<book> is missing"
+    if (!path) throw "path is not specified"
     
-    this.title      = Text.Load(node.selectSingleNode("title"))
-    this.keywords   = Text.Load(node.selectSingleNode("keywords"), {optional:true})
-    this.styles     = node.getAttribute("styles")
+    this.path       = path
+    this.title      = Text.Load(node.selectSingleNode("title"), path)
+    this.keywords   = Text.Load(node.selectSingleNode("keywords"), path, {optional:true})
     this.chapters   = this.LoadChapters(node)
+    this.styles     = this.LoadStyles(node.getAttribute("styles"))
 }
 
 Book.prototype = Book
+
+//-----------------------------------------------------------------------------
+// Book.LoadStyles
+//-----------------------------------------------------------------------------
+function Book.LoadStyles(cssfile)
+{
+    var path = ResolvePath(cssfile, [this.path])
+    var text = GetFileContents(path)
+
+    return text
+}
 
 //-----------------------------------------------------------------------------
 // Book.LoadChapters
@@ -252,11 +366,14 @@ function Book.LoadChapters(parent)
     for (var i = 0; i < nodes.length; i++)
     try
     {
-        chapters.push(new Chapter(nodes[i]))
+        chapters.push(new Chapter(nodes[i], this.path))
     }
     catch(e)
     {
-        Logger.LogError("<chapter> " + i + "; " + (e.message || e))
+        var path = nodes[i].getAttribute("contents")
+        var chap = path ? path : "<chapter>" + i
+
+        throw chap + "; " + (e.message || e)
     }
     
     return chapters
@@ -267,10 +384,11 @@ function Book.LoadChapters(parent)
 //
 //  total:int       the number of paragraphs in the book
 //  lang[str]:int   the number of paragraphs in this language
+//  nlangs:         the number of used languages
 //-----------------------------------------------------------------------------
 function Book.GetProgressInfo()
 {
-    var info = { total:0, lang:{} }
+    var info = { total:0, lang:{}, nlangs:0 }
 
     for (var i in this.chapters)
     {
@@ -290,6 +408,9 @@ function Book.GetProgressInfo()
             if (n) info.total++
         }
     }
+
+    for (var i in info.lang)
+        info.nlangs++
     
     return info
 }
@@ -307,7 +428,7 @@ function Book.GetProgressInfo()
 //
 //  var p = new XMLNode('p')
 //  p.attributes['style'] = 'some-css-style'
-//  p.subnodes.push('The Text')
+//  p.push('The Text')
 //-----------------------------------------------------------------------------
 function XMLNode(name, attributes)
 {
@@ -426,6 +547,7 @@ function XMLDoc.Serialize(puts, opts)
 //  book:           Book
 //  langs:          (string -> bool) used languaged
 //  preferredLang:  the preferred language
+//  info            the result of Book.GetProgressInfo
 //-----------------------------------------------------------------------------
 function Composer(book)
 {
@@ -449,6 +571,8 @@ function Composer.SaveAs(HTMLFileName)
     doc.nodes.push(htmlNode)
     htmlNode.push(headNode)
     htmlNode.push(bodyNode)
+
+    this.info = this.book.GetProgressInfo()
  
     this.WriteProgress(bodyNode)
     this.WriteContentTypeTag(headNode)
@@ -479,8 +603,7 @@ function Composer.GetPreferredTranslation(text)
 //-----------------------------------------------------------------------------
 function Composer.WriteProgress(parent)
 {
-    var info = this.book.GetProgressInfo()
-    
+    var info = this.info    
     var node = new XMLNode("div", { 'class':'progress' })
     
     parent.push(node)
@@ -515,14 +638,13 @@ function Composer.WriteKeywords(parent)
 //-----------------------------------------------------------------------------
 function Composer.WriteStyleSheet(parent)
 {
-    parent.push(
-        new XMLNode("link",
-        {
-            "rel":  "stylesheet",
-            "type": "text/css",
-            "href": this.book.styles
-        })
-    )
+    var xml = new XMLNode("style")
+
+    xml.push("<!--\n")
+    xml.push(this.book.styles)
+    xml.push("-->")
+
+    parent.push(xml)
 }
 
 //-----------------------------------------------------------------------------
@@ -578,15 +700,19 @@ function Composer.WriteChapterTitle(parent, title)
 //-----------------------------------------------------------------------------
 function Composer.WriteParagraphs(parent, paragraphs)
 {
-    for (var i in paragraphs)
+    var table = new XMLNode("table")
+
+    for (var i = 0; i < paragraphs.length; i++)
     {
         var text = paragraphs[i]
-        var root = new XMLNode("div", text.style ? { 'class':text.style } : {})
+        var row = new XMLNode("tr", text.style ? { 'class':text.style } : {})
 
-        this.WriteLangViews(root, text.views)
+        this.WriteLangViews(row, text.views)
         
-        parent.push(root)
+        table.push(row)
     }
+
+    parent.push(table)
 }
 
 //-----------------------------------------------------------------------------
@@ -598,7 +724,7 @@ function Composer.WriteLangViews(parent, views)
         if (this.IsLangUsed(lang))
         {
             var text = views[lang]
-            var node = new XMLNode("p", { 'class':lang })
+            var node = new XMLNode("td", { 'class':lang })
             
             node.push(Text.Preprocess(text))
             
@@ -615,28 +741,54 @@ function Composer.IsLangUsed(lang)
 }
 
 //-----------------------------------------------------------------------------
-// Main
+// Translates a xml into a html book.
 //-----------------------------------------------------------------------------
-
-function Translate()
+function Translate(bookxml, bookhtml, options)
 {
-    var book = new Book("book.xml")
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
+    var path = fs.GetParentFolderName(bookxml)
+
+    var book = new Book(bookxml, path)
     var comp = new Composer(book)
-    
-    // en only
-    comp.langs = {en:true}
-    comp.preferredLang = "en"
-    comp.SaveAs("book-en.html")    
-    
-    // all languages
-    comp.langs = null
-    comp.preferredLang = "ru"
-    comp.SaveAs("book-all.html")
-    
-    // ru only
-    comp.langs = {ru:true}
-    comp.preferredLang = "ru"
-    comp.SaveAs("book-ru.html")
+
+    var options = options || {}
+
+    comp.langs = options.langs
+    comp.preferredLang = options.preferredLang
+
+    CreateParentFolders(bookhtml)
+    comp.SaveAs(bookhtml)
 }
 
-Translate()
+function println(s)
+{
+    WScript.StdOut.WriteLine(s)
+}
+
+function Main()
+{
+    Translate("src/loa/book.xml", "res/loa/book-en.html", {langs:{en:true}, preferredLang:"en"})
+    Translate("src/loa/book.xml", "res/loa/book-ru.html", {langs:{ru:true}, preferredLang:"ru"})
+    Translate("src/loa/book.xml", "res/loa/book-en-ru.html", {langs:{en:true,ru:true}, preferredLang:"ru"})
+
+    Translate("src/manwhw/book.xml", "res/manwhw/book-en.html", {langs:{en:true}, preferredLang:"en"})
+    Translate("src/manwhw/book.xml", "res/manwhw/book-ru.html", {langs:{ru:true}, preferredLang:"ru"})
+    Translate("src/manwhw/book.xml", "res/manwhw/book-en-ru.html", {langs:{en:true,ru:true}, preferredLang:"ru"})
+}
+
+function Exec(f, c)
+{
+    if (!c)
+        return f()
+        
+    try
+    {
+        return f()
+    }
+    catch (e)
+    {
+        WScript.StdErr.WriteLine(e)
+    }
+}
+
+Exec(Main, true)

@@ -1,27 +1,23 @@
-body
+body { font-family: calibri; }
+h2 { text-align: center; }
+
+div {}
+
+tr
 {
-    font-family: calibri;
+    vertical-align: top;
 }
 
-h2
-{
-    text-align: center;
-}
-
-div
-{
-}
-
-p
+td
 {
     text-indent: 1em;
     text-align: justify;
-    width: 50%;
     padding: 0.5em;
-    display: table-cell;
+    font-size: 0.75em;
+    width: 50%;
 }
 
-div.footer p
+.footer td
 {
     text-align: right;
     font-style: italic;
@@ -40,15 +36,5 @@ div.footer p
     display: inline;
     margin-left: 2em;
     color: lightgray;
-    font-size: 8pt;
-}
-
-a.git
-{
-    position: absolute;
-    left: 10pt;
-    top: 10pt;
-    color: lightgray;
-    text-decoration: none;
     font-size: 8pt;
 }
