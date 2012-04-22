@@ -8,6 +8,7 @@
     <keywords contents="keywords.xml"/>
 
     <chapter contents="chapters/foreword.xml"/>
+    <chapter contents="chapters/github.xml"/>
     <chapter contents="chapters/characters.xml"/>
     <chapter contents="chapters/intro.xml"/>
     <chapter contents="chapters/chap1.xml"/>
