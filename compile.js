@@ -146,6 +146,22 @@ function File.Close()
 }
 
 //-----------------------------------------------------------------------------
+// Picture
+//
+//      relsrc: the relative path to the picture file
+//      path:   path to a folder where the xml file with this object is located
+//-----------------------------------------------------------------------------
+function Picture(node, path)
+{
+    if (!path) throw "path not specified"
+    
+    this.path   = path
+    this.relsrc = node.getAttribute('src')
+}
+
+Picture.prototype = Picture
+
+//-----------------------------------------------------------------------------
 // Text
 //
 //      views:  <language, text>
@@ -297,17 +313,24 @@ function Chapter.Initialize(parent, path)
 }
 
 //-----------------------------------------------------------------------------
-// Chapter.LoadParagraphs
+// Loads paragraphs that make up a chapter. A paragraph can be a <text> node
+// with text translations in different languages or a <img> node with a picture.
 //-----------------------------------------------------------------------------
 function Chapter.LoadParagraphs(parent)
 {
-    var nodes = parent.selectNodes("text")
+    var nodes = parent.selectNodes("text|img")
     var paragraphs = []
     
     for (var i = 0; i < nodes.length; i++)
     try
     {
-        paragraphs.push(new Text(nodes[i], this.path))
+        var node = nodes[i]
+        
+        if (node.nodeName == 'text')
+            paragraphs.push(new Text(node, this.path))
+
+        if (node.nodeName == 'img')
+            paragraphs.push(new Picture(node, this.path))
     }
     catch(e)
     {
@@ -573,6 +596,8 @@ Composer.prototype = Composer
 //-----------------------------------------------------------------------------
 function Composer.SaveAs(HTMLFileName)
 {
+    this.targethtml = HTMLFileName
+
     var doc = new XMLDoc()
     
     var htmlNode = new XMLNode('html')
@@ -717,11 +742,19 @@ function Composer.WriteParagraphs(parent, paragraphs)
 
     for (var i = 0; i < paragraphs.length; i++)
     {
-        var text = paragraphs[i]
-        var row = new XMLNode("tr", text.style ? { 'class':text.style } : {})
-
-        this.WriteLangViews(row, text.views)
+        var par = paragraphs[i]
+        var row = new XMLNode("tr", par.style ? { 'class':par.style } : {})
         
+        row.attributes.title = par.path
+
+        if (par.prototype == Text)
+            this.WriteLangViews(row, par.views)
+        else if (par.prototype == Picture)
+        {
+            this.WritePicture(row, par)
+            this.CopyPicture(par)
+        }
+
         table.push(row)
     }
 
@@ -737,10 +770,43 @@ function Composer.WriteLangViews(parent, views)
     {
         var text = views[lang]
         var str = text ? Text.Preprocess(text) : ""
-        var node = new XMLNode("td", { 'class':lang })            
-        node.push(str)            
+        var node = new XMLNode("td", { 'class':lang })
+        
+        if (text == "") node.attributes.style = "background:red"
+        
+        node.push(str)
         parent.push(node)
     }
+}
+
+//-----------------------------------------------------------------------------
+// Creates a <img> html tag.
+//
+//      tr      a <tr> tag inside <table>
+//      pic     a Picture object
+//-----------------------------------------------------------------------------
+function Composer.WritePicture(tr, pic)
+{
+    var img = new XMLNode("img", {src:pic.relsrc})
+    var td = new XMLNode("td")
+    
+    td.push(img)
+    tr.push(td)
+}
+
+//-----------------------------------------------------------------------------
+// Copies a picture to the folder with the generated html file.
+//-----------------------------------------------------------------------------
+function Composer.CopyPicture(pic)
+{
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
+
+    var html = fs.GetFile(this.targethtml)
+    var picxml = fs.GetFile(pic.path)
+    var srcpicpath = BuildPath([picxml.ParentFolder, pic.relsrc])
+    var dstpicpath = BuildPath([html.ParentFolder, pic.relsrc])
+
+    fs.CopyFile(srcpicpath, dstpicpath)
 }
 
 //-----------------------------------------------------------------------------
