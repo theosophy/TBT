@@ -1,4 +1,12 @@
 //-----------------------------------------------------------------------------
+// Writes a text to StdOut if the latter exists.
+//-----------------------------------------------------------------------------
+function Println(s)
+{
+    if (WScript.StdOut) WScript.StdOut.WriteLine(s)
+}
+
+//-----------------------------------------------------------------------------
 // Finds a file that corresponds to the given path.
 //-----------------------------------------------------------------------------
 function ResolvePath(path, locations)
@@ -792,6 +800,7 @@ function TranslateAll(srcdir, resdir, translations)
         {
             var bookhtml = BuildPath([htmldir, BuildBookName(translations[t]) + ".html"])
             Translate(bookxml, bookhtml, translations[t])
+            Println('created: ' + ResolvePath(bookhtml))
         }
     }
 }
