@@ -8,3 +8,7 @@ After the regex applied, you just need to enclose entire text into <body></body>
     <?xml version="1.0" encoding="UTF-8"?>
     <body>
     </body>
+    
+To run the script under debugger, use
+
+    
