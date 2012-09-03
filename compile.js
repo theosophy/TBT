@@ -1,3 +1,7 @@
+GlobalFlags = {}
+
+GlobalFlags.Debug = false
+
 //-----------------------------------------------------------------------------
 // Writes a text to StdOut if the latter exists.
 //-----------------------------------------------------------------------------
@@ -612,7 +616,9 @@ function Composer.SaveAs(HTMLFileName)
 
     this.info = this.book.GetProgressInfo()
  
-    this.WriteProgress(bodyNode)
+    if (GlobalFlags.Debug)
+        this.WriteProgress(bodyNode)
+
     this.WriteContentTypeTag(headNode)
     this.WriteBookTitle(headNode)
     this.WriteStyleSheet(headNode)
@@ -745,7 +751,8 @@ function Composer.WriteParagraphs(parent, paragraphs)
         var par = paragraphs[i]
         var row = new XMLNode("tr", par.style ? { 'class':par.style } : {})
         
-        row.attributes.title = par.path
+        if (GlobalFlags.Debug)
+            row.attributes.title = par.path
 
         if (par.prototype == Text)
             this.WriteLangViews(row, par.views)
@@ -772,7 +779,8 @@ function Composer.WriteLangViews(parent, views)
         var str = text ? Text.Preprocess(text) : ""
         var node = new XMLNode("td", { 'class':lang })
         
-        if (text == "") node.attributes.style = "background:red"
+        if (GlobalFlags.Debug && text == "")
+            node.attributes.style = "background:red"
         
         node.push(str)
         parent.push(node)
