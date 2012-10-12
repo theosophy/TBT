@@ -1,52 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <body>
-<title>
-<view lang="en">A Note</view>
-<view lang="ru">Замечание</view>
-</title>
-
-<text>
-<view lang="en">
-The lives are published in two volumes. Since the original drafting some additions to the Band of Servers have been met and recognised, so some additional charts have been added.
-</view>
-<view lang="ru">
-"Жизни" опубликованы в двух томах. С момента первых исследований были обнаружены и узнаны новые члены Группы Служителей и потому были добавлены новые диаграммы.
-</view>
-</text>
-
-<text>
-<view lang="en">
-The pictures were done by one of our helpers, who was a fortunate combination of an artist, quick to visualise a description, and to some extent a clairvoyant and intuitive. They give a fair idea of the appearance of the subject of the biographies, as he was known to us.
-</view>
-<view lang="ru">
-Изображения были нарисованы одним из наших помошников, который удачно совмещал качества художника, способного быстро изобразить описание, и в некоторой степени ясновидящего. Они дали нам ясное представление о внешности героя биографий, в той мере в которой он нам был известен.
-</view>
-</text>
-
-<text>
-<view lang="en">
-This is, I believe, the first serious attempt to link together many lives of many persons in consecutive order, and they throw much light on the workings of Karma and the Law of Reincarnation. They remind one of a saying in the Hebrew Scriptures; "I will bring my sons from far, and my daughters from the ends of the earth." The present life period is one of the "gathering of the clan" and it has been strange to see how, apparently fortuitously , boys and girls have come together from different Nations, led by circumstances, and have fallen naturally into harmonious group.
-</view>
-<view lang="ru">
-Я верю, что это первая серьёзная попытка связать вместе много жизней многих личностей в последовательном порядке и что они ярко освещают работу Кармы и Закон Реинкарнации. Они напоминают об одном сказании из Иудейских Манускриптов: "Я приведу сынов своих издалека и дочерей моих с концов земли." Настоящий этап жизни -- один из тех, что "собирает клан вместе", и странно видеть как несомненно случайно, девочки и мальчики собрались вместе из разных Наций, ведомые обстоятельствами, и естественно оказались в слаженной группе.
-</view>
-</text>
-
-<text>
-<view lang="en">
-Doubtless other such books as this will appear in the future, as the extension of sight becomes more common. This is a pioneer work, a new adventure, and our ship is likely to sail over stormy seas.
-</view>
-<view lang="ru">
-Несомненно другие подобные книги появятся в будущем, ибо развитие ясновидения становится всё более общим. Эта работа -- пионер, и вероятно, что наш корабль отправится в бурное море.
-</view>
-</text>
-
-<text class="footer">
-<view lang="en">
-Annie Besant. December, 1924.
-</view>
-<view lang="ru">
-Анна Безант. Декабрь, 1924 г.
-</view>
-</text>
+  <title>
+    <view lang="en">
+      A Note
+    </view>
+    <view lang="ru">
+      Замечание
+    </view>
+  </title>
+  <text>
+    <view lang="en">
+      The lives are published in two volumes. Since the original drafting some additions to the Band of
+      Servers have been met and recognised, so some additional charts have been added.
+    </view>
+    <view lang="ru">
+      "Жизни" опубликованы в двух томах. С момента первых исследований были обнаружены и узнаны новые
+      члены Группы Служителей и потому были добавлены новые диаграммы.
+    </view>
+  </text>
+  <text>
+    <view lang="en">
+      The pictures were done by one of our helpers, who was a fortunate combination of an artist, quick
+      to visualise a description, and to some extent a clairvoyant and intuitive. They give a fair idea
+      of the appearance of the subject of the biographies, as he was known to us.
+    </view>
+    <view lang="ru">
+      Изображения были нарисованы одним из наших помошников, который удачно совмещал качества художника,
+      способного быстро изобразить описание, и в некоторой степени ясновидящего. Они дали нам ясное
+      представление о внешности героя биографий, в той мере в которой он нам был известен.
+    </view>
+  </text>
+  <text>
+    <view lang="en">
+      This is, I believe, the first serious attempt to link together many lives of many persons in
+      consecutive order, and they throw much light on the workings of Karma and the Law of Reincarnation.
+      They remind one of a saying in the Hebrew Scriptures; "I will bring my sons from far, and my
+      daughters from the ends of the earth." The present life period is one of the "gathering of the
+      clan" and it has been strange to see how, apparently fortuitously , boys and girls have come
+      together from different Nations, led by circumstances, and have fallen naturally into harmonious
+      group.
+    </view>
+    <view lang="ru">
+      Я верю, что это первая серьёзная попытка связать вместе много жизней многих личностей в
+      последовательном порядке и что они ярко освещают работу Кармы и Закон Реинкарнации. Они напоминают
+      об одном сказании из Иудейских Манускриптов: "Я приведу сынов своих издалека и дочерей моих с
+      концов земли." Настоящий этап жизни -- один из тех, что "собирает клан вместе", и странно видеть
+      как несомненно случайно, девочки и мальчики собрались вместе из разных Наций, ведомые
+      обстоятельствами, и естественно оказались в слаженной группе.
+    </view>
+  </text>
+  <text>
+    <view lang="en">
+      Doubtless other such books as this will appear in the future, as the extension of sight becomes
+      more common. This is a pioneer work, a new adventure, and our ship is likely to sail over stormy
+      seas.
+    </view>
+    <view lang="ru">
+      Несомненно другие подобные книги появятся в будущем, ибо развитие ясновидения становится всё более
+      общим. Эта работа -- пионер, и вероятно, что наш корабль отправится в бурное море.
+    </view>
+  </text>
+  <text class="footer">
+    <view lang="en">
+      Annie Besant. December, 1924.
+    </view>
+    <view lang="ru">
+      Анна Безант. Декабрь, 1924 г.
+    </view>
+  </text>
 </body>

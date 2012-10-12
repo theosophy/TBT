@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <body>
-    <title>
-        <view lang="en">Diagrams</view>
-        <view lang="ru">Диаграммы</view>
-    </title>
-
-    <img src="diagram1.jpg"/>
-    <img src="diagram2.jpg"/>
-    <img src="diagram3.jpg"/>
-    <img src="diagram4.jpg"/>
+  <title>
+    <view lang="en">
+      Diagrams
+    </view>
+    <view lang="ru">
+      Диаграммы
+    </view>
+  </title>
+  <img src="diagram1.jpg"/>
+  <img src="diagram2.jpg"/>
+  <img src="diagram3.jpg"/>
+  <img src="diagram4.jpg"/>
 </body>

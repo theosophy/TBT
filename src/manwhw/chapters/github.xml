@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <body>
-<title>
-<view lang="en">A Note from Translator</view>
-<view lang="ru">Примечание перевода</view>
-</title>
-
-<text>
-<view lang="en">
-Those who wish to participate in translating the book, or improve the quality of the existing translation, may edit it on https://github.com/theosophy/tbt.
-</view>
-<view lang="ru">
-Все желающие принять участие в переводе этой книги, или в улучшении имеющегося перевода, могут отредактировать его на https://github.com/theosophy/tbt.
-</view>
-</text>
+  <title>
+    <view lang="en">
+      A Note from Translator
+    </view>
+    <view lang="ru">
+      Примечание перевода
+    </view>
+  </title>
+  <text>
+    <view lang="en">
+      Those who wish to participate in translating the book, or improve the quality of the existing
+      translation, may edit it on https://github.com/theosophy/tbt.
+    </view>
+    <view lang="ru">
+      Все желающие принять участие в переводе этой книги, или в улучшении имеющегося перевода, могут
+      отредактировать его на https://github.com/theosophy/tbt.
+    </view>
+  </text>
 </body>
