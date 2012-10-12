@@ -1,6 +1,6 @@
 GlobalFlags = {}
 
-GlobalFlags.Debug = false
+GlobalFlags.Debug = true
 
 //-----------------------------------------------------------------------------
 // Writes a text to StdOut if the latter exists.
@@ -203,7 +203,6 @@ function Text.Preprocess(text)
     var s = text || ""
     
     s = s.replace(/\s+[—-]+\s+/, "&nbsp;&mdash;&nbsp;")
-    s = s.replace(/\n/, "<br>")
     
     return s
 }
