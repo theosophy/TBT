@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This list of characters with their aliases
+     appeared in "Man: Whence, How and Whither"
+     and used in "Lives of Alcyone." -->
+<body>
+  <title>
+    <view lang="en">
+      Some of the characters in the story
+    </view>
+    <view lang="ru">
+      Некоторые из имён упоминаемые в книге
+    </view>
+  </title>
+  <text>
+    <view lang="en">The Four Kumaras - Four of the Lords of the Flame, still living in Shamballa.</view>
+    <view lang="ru">Четыре Кумары - Четыре Властелина Огня живущих в Шамбале.</view>
+  </text>
+  <text>
+    <view lang="en">Mahaguru - The Bodhisattva of the time, appearing as Vyasa, Thoth (Hermes), Zarathushtra, Orpheus, finally as Gautama; who became the Lord Buddha</view>
+    <view lang="ru">Махагуру - Бодхисаттва, упоминаемый как Гермес, Заратуштра, Орфей, Гаутама или Лорд Будда.</view>
+  </text>
+  <text>
+    <view lang="en">Surya - The Lord Maitreya, the present Bodhisattva, the Supreme Teacher of the world.</view>
+    <view lang="ru">Сурья - Лорд Майтрейя, в настоящий момент Бодхисаттва, Верховный Учитель мира.</view>
+  </text>
+  <text>
+    <view lang="en">Manu - The Head of a Root-Race. If with a prefix, Root-Manu or Seed-Manu, a yet higher Official, presiding over a larger cycle of evolution - a Round or a Chain. The cognomen Vaivasvata is given in Hindu books both to the Root-Manu of our Chain and the Manu of the Aryan, or fifth, Root Race.</view>
+    <view lang="ru">Ману - Глава коренной расы. Более высокое звание, Коренной Ману, дано тому, кто главенствует на протяжении большего этапа эволюции называемого Раундом или Цепью. В индийских книгах как Коренной Ману так и Ману пятой коренной расы Арийцев одинаково называются Вайвасватой.</view>
+  </text>
+  <text>
+    <view lang="en">Viraj - The Maha-Chohan, a high Official, of rank equal to that of a Manu or a Bodhisattva.</view>
+    <view lang="ru">Вирэй - Махачохан. Это высокое звание, эквивалентное Manu или Бодхисаттве.</view>
+  </text>
+  <text>
+    <view lang="en">Saturn - Now a Master, spoken of in some Theosophical books as `The Venetian'.</view>
+    <view lang="ru">Сатурн - Мастер, называемый в некоторых теософских книгах Венецианцем.</view>
+  </text>
+  <text>
+    <view lang="en">Jupiter - Now a Master, residing in the Nilgiri Hills.</view>
+    <view lang="ru">Юпитер - Мастер, живущий в горах Нилгири.</view>
+  </text>
+  <text>
+    <view lang="en">Mars - Now the Master M. of the Occult World.</view>
+    <view lang="ru">Марс - Учитель М. Оккультного Мира</view>
+  </text>
+  <text>
+    <view lang="en">Mercury - Now the Master K. H. of the Occult World.</view>
+    <view lang="ru">Меркурий - Учитель К.Х. Оккультного Мира</view>
+  </text>
+  <text>
+    <view lang="en">Neptune - Now the Master Hilarion.</view>
+    <view lang="ru">Нептун - Мастер Илларион.</view>
+  </text>
+  <text>
+    <view lang="en">Osiris - Now the Master Serapis.</view>
+    <view lang="ru">Осирис - Мастер Серапис.</view>
+  </text>
+  <text>
+    <view lang="en">Brihaspati - Now the Master Jesus.</view>
+    <view lang="ru">Брихаспати - Учитель Иисус</view>
+  </text>
+  <text>
+    <view lang="en">Venus - Now the Master Ragozci (or Rakovzky), the `Hungarian Adept,' the Comte de S. Germain of the eighteenth century.</view>
+    <view lang="ru">Венера - Мастер Ракоци (или Раковски), "Венгерский Адепт", Comte de S. Germain 18-го века.</view>
+  </text>
+  <text>
+    <view lang="en">Uranus - Now the Master D.K.</view>
+    <view lang="ru">Уран - Учитель Д.К.</view>
+  </text>
+  <text>
+    <view lang="en">Vulcan - Now a Master: known in His last earth-life as Sir Thomas More.</view>
+    <view lang="ru">Вулкан - Мастер, известный по его последней земной жизни как сэр Томас Мур.</view>
+  </text>
+  <text>
+    <view lang="en">Athena - Now a Master; know on earth as Thomas Vaughan, `Eugenius Philalethes'.</view>
+    <view lang="ru">Афина - Мастер, известный на Земле как Томас Вон или Евгений Филателист.</view>
+  </text>
+  <text>
+    <view lang="en">Alba - Ethel Whyte</view>
+    <view lang="ru">Альба - Ethel Whyte</view>
+  </text>
+  <text>
+    <view lang="en">Albireo - Maria-Luisa Kirby</view>
+    <view lang="ru">Албирео - Мария-Луиза Кирби</view>
+  </text>
+  <text>
+    <view lang="en">Alcyone - J. Krishnamurti</view>
+    <view lang="ru">Алкион - Д. Кришнамурти</view>
+  </text>
+  <text>
+    <view lang="en">Aletheia - John van Manen</view>
+  </text>
+  <text>
+    <view lang="en">Altair - Herbert Whyte</view>
+  </text>
+  <text>
+    <view lang="en">Arcor - A. J. Wilson</view>
+  </text>
+  <text>
+    <view lang="en">Aurora - Count Bubna-Licics</view>
+  </text>
+  <text>
+    <view lang="en">Capella - S. Maud Sharpe</view>
+  </text>
+  <text>
+    <view lang="en">Corona - Julius Caesar</view>
+    <view lang="ru">Корона - Юлий Цезарь</view>
+  </text>
+  <text>
+    <view lang="en">Crux - The Hon. Otway Cuffe</view>
+  </text>
+  <text>
+    <view lang="en">Deneb - Lord Cochrane (Tenth Earl of Dundonald)</view>
+  </text>
+  <text>
+    <view lang="en">Eudoxia - Louisa Shaw</view>
+  </text>
+  <text>
+    <view lang="en">Fides - G. S. Arundale</view>
+  </text>
+  <text>
+    <view lang="en">Gemini - E. Maud Green</view>
+  </text>
+  <text>
+    <view lang="en">Hector - W. H. Kirby</view>
+  </text>
+  <text>
+    <view lang="en">Helios - Marie Russak</view>
+  </text>
+  <text>
+    <view lang="en">Herakles - Annie Besant</view>
+    <view lang="ru">Геракл - Анна Безант</view>
+  </text>
+  <text>
+    <view lang="en">Leo - Fabrizio Ruspoli</view>
+  </text>
+  <text>
+    <view lang="en">Lomia - J. I. Wedgwood</view>
+  </text>
+  <text>
+    <view lang="en">Lutetia - Charles Bradlaugh</view>
+  </text>
+  <text>
+    <view lang="en">Lyra - Lao-Tze</view>
+    <view lang="ru">Лира - Лао-Цзы</view>
+  </text>
+  <text>
+    <view lang="en">Mira - Carl Holbrook</view>
+  </text>
+  <text>
+    <view lang="en">Mizar - J. Nityananda</view>
+  </text>
+  <text>
+    <view lang="en">Mona - Piet Meuleman</view>
+  </text>
+  <text>
+    <view lang="en">Norma - Margherita Ruspoli</view>
+  </text>
+  <text>
+    <view lang="en">Olympia - Damodar K. Mavalankar</view>
+  </text>
+  <text>
+    <view lang="en">Pallas - Plato</view>
+  </text>
+  <text>
+    <view lang="en">Phocea - W. Q. Judge</view>
+  </text>
+  <text>
+    <view lang="en">Phoenix - T. Pascal</view>
+  </text>
+  <text>
+    <view lang="en">Polaris - B. P. Wadia</view>
+  </text>
+  <text>
+    <view lang="en">Proteus - The Teshu Lama</view>
+  </text>
+  <text>
+    <view lang="en">Selene - C. Jinarajadasa</view>
+  </text>
+  <text>
+    <view lang="en">Sirius - C. W. Leadbeater</view>
+    <view lang="ru">Сириус - Ч.У.Ледбитер</view>
+  </text>
+  <text>
+    <view lang="en">Siwa - T. Subba Rao</view>
+  </text>
+  <text>
+    <view lang="en">Spica - Francesca Arundale</view>
+  </text>
+  <text>
+    <view lang="en">Taurus - Jerome Anderson</view>
+  </text>
+  <text>
+    <view lang="en">Ulysses - H. S. Olcott</view>
+    <view lang="ru">Одиссей - Г.С.Олькотт</view>
+  </text>
+  <text>
+    <view lang="en">Vajra - H. P. Blavatsky</view>
+    <view lang="ru">Вайра - Е.П.Блаватская</view>
+  </text>
+  <text>
+    <view lang="en">Vesta - Minnie C. Holbrook</view>
+  </text>
+</body>

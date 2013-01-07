@@ -9,7 +9,7 @@
 
     <chapter contents="chapters/foreword.xml"/>
     <chapter contents="chapters/github.xml"/>
-    <chapter contents="chapters/characters.xml"/>
+    <chapter contents="../shared/characters.xml"/>
     <chapter contents="chapters/intro.xml"/>
     <chapter contents="chapters/chap1.xml"/>
     <chapter contents="chapters/chap2.xml"/>
