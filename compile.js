@@ -5,14 +5,31 @@ GlobalFlags.Debug = false
 //-----------------------------------------------------------------------------
 // Writes a text to StdOut if the latter exists.
 //-----------------------------------------------------------------------------
-function Println(s) {
-    if (WScript.StdOut) WScript.StdOut.WriteLine(s)
+function println(s) {
+    if (WScript.StdOut)
+        WScript.StdOut.WriteLine(s)
+}
+
+//-----------------------------------------------------------------------------
+// Waits for input.
+//-----------------------------------------------------------------------------
+function readln(s) {
+    if (WScript.StdIn)
+        return WScript.StdIn.ReadLine()
+}
+
+//-----------------------------------------------------------------------------
+// Checks whether the file exists.
+//-----------------------------------------------------------------------------
+function fileExists(path) {
+    var fs = WScript.CreateObject("Scripting.FileSystemObject")
+    return fs.FileExists(path)
 }
 
 //-----------------------------------------------------------------------------
 // Finds a file that corresponds to the given path.
 //-----------------------------------------------------------------------------
-function ResolvePath(path, locations) {
+function resolvePath(path, locations) {
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
 
     if (fs.FileExists(path))
@@ -31,7 +48,7 @@ function ResolvePath(path, locations) {
 //-----------------------------------------------------------------------------
 // This function creates needed folders if they do not exist.
 //-----------------------------------------------------------------------------
-function CreateParentFolders(path) {
+function createParentFolders(path) {
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
     var abspath = fs.GetAbsolutePathName(path)
     var dirs = []
@@ -48,7 +65,7 @@ function CreateParentFolders(path) {
 //-----------------------------------------------------------------------------
 // Returns a string that contains contents of a text file.
 //-----------------------------------------------------------------------------
-function GetFileContents(file) {
+function getFileContents(file) {
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
     var tf = fs.OpenTextFile(file, 1 /* read only */)
 
@@ -58,7 +75,7 @@ function GetFileContents(file) {
 //-----------------------------------------------------------------------------
 // Constructs a path using the correct path delimiter.
 //-----------------------------------------------------------------------------
-function BuildPath(items) {
+function buildPath(items) {
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
     var path = items[0]
 
@@ -71,7 +88,7 @@ function BuildPath(items) {
 //-----------------------------------------------------------------------------
 // Returns an array of paths of subfolders.
 //-----------------------------------------------------------------------------
-function GetSubFolders(dir) {
+function getSubFolders(dir) {
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
 
     if (!fs.FolderExists(dir))
@@ -89,7 +106,7 @@ function GetSubFolders(dir) {
 //-----------------------------------------------------------------------------
 // Creates a DOM tree. Optionally loads contents from a xml file.
 //-----------------------------------------------------------------------------
-function CreateXML(file) {
+function createXML(file) {
     var xml = WScript.CreateObject("Microsoft.XMLDOM")
 
     xml.async = false
@@ -124,14 +141,14 @@ File.prototype = File
 //-----------------------------------------------------------------------------
 // Writes a string to the file.
 //-----------------------------------------------------------------------------
-function File.Write(text) {
+function File.write(text) {
     this.stream.WriteText(text)
 }
 
 //-----------------------------------------------------------------------------
 // Closes the file.
 //-----------------------------------------------------------------------------
-function File.Close() {
+function File.close() {
     this.stream.SaveToFile(this.path, 2)
 }
 
@@ -161,7 +178,7 @@ function Text(node, path) {
     if (!path) throw "path is not specified"
 
     this.style = node.getAttribute("class")
-    this.views = this.LoadViews(node)
+    this.views = this.loadViews(node)
     this.path = path
 }
 
@@ -170,7 +187,7 @@ Text.prototype = Text
 //-----------------------------------------------------------------------------
 // Text.GetTranslation
 //-----------------------------------------------------------------------------
-function Text.GetTranslation(lang) {
+function Text.getTranslation(lang) {
     if (this.views[lang])
         return this.views[lang]
 
@@ -181,10 +198,10 @@ function Text.GetTranslation(lang) {
 //-----------------------------------------------------------------------------
 // Text.Preprocess
 //-----------------------------------------------------------------------------
-function Text.Preprocess(text) {
+function Text.preprocess(text) {
     var s = text || ""
 
-    s = s.replace(/\s+[—-]+\s+/, "&nbsp;&mdash;&nbsp;")
+    s = s.replace(/\s+[—-]+\s+/g, "&nbsp;&mdash;&nbsp;")
 
     return s
 }
@@ -192,7 +209,7 @@ function Text.Preprocess(text) {
 //-----------------------------------------------------------------------------
 // Text.LoadViews
 //-----------------------------------------------------------------------------
-function Text.LoadViews(XMLNode) {
+function Text.loadViews(XMLNode) {
     var nodes = XMLNode.selectNodes("view")
     var views = {}
 
@@ -234,7 +251,7 @@ function Text.LoadViews(XMLNode) {
 //  node:   an xml node that represents this Text object
 //  path:   path to a folder where the xml file with this object is located
 //-----------------------------------------------------------------------------
-function Text.Load(node, path, options) {
+function Text.load(node, path, options) {
     if (!node) {
         if (options && options.optional) return null
         throw "the Text node is optional, but does not exist"
@@ -246,8 +263,8 @@ function Text.Load(node, path, options) {
         if (node.firstChild)
             throw 'a Text node with the "contents" attribute may not have any child nodes'
 
-        var resolvedPath = ResolvePath(contents, [path])
-        var textNode = CreateXML(resolvedPath).selectSingleNode("text")
+        var resolvedPath = resolvePath(contents, [path])
+        var textNode = createXML(resolvedPath).selectSingleNode("text")
 
         return new Text(textNode, resolvedPath)
     }
@@ -267,12 +284,12 @@ function Chapter(XMLNode, path) {
     var external = XMLNode.getAttribute("contents")
 
     if (!external)
-        this.Initialize(XMLNode, path)
+        this.initialize(XMLNode, path)
     else {
-        var resolvedPath = ResolvePath(external, [path])
-        var chapterNode = CreateXML(resolvedPath).selectSingleNode("body")
+        var resolvedPath = resolvePath(external, [path])
+        var chapterNode = createXML(resolvedPath).selectSingleNode("body")
 
-        this.Initialize(chapterNode, resolvedPath)
+        this.initialize(chapterNode, resolvedPath)
     }
 }
 
@@ -281,17 +298,17 @@ Chapter.prototype = Chapter
 //-----------------------------------------------------------------------------
 // Chapter.Initialize
 //-----------------------------------------------------------------------------
-function Chapter.Initialize(parent, path) {
+function Chapter.initialize(parent, path) {
     this.path = path
     this.title = new Text(parent.selectSingleNode("title"), path)
-    this.paragraphs = this.LoadParagraphs(parent)
+    this.paragraphs = this.loadParagraphs(parent)
 }
 
 //-----------------------------------------------------------------------------
 // Loads paragraphs that make up a chapter. A paragraph can be a <text> node
 // with text translations in different languages or a <img> node with a picture.
 //-----------------------------------------------------------------------------
-function Chapter.LoadParagraphs(parent) {
+function Chapter.loadParagraphs(parent) {
     var nodes = parent.selectNodes("text|img")
     var paragraphs = []
 
@@ -322,17 +339,17 @@ function Chapter.LoadParagraphs(parent) {
 //      path:       path to a folder where the xml file with this object is located
 //-----------------------------------------------------------------------------
 function Book(xmlFile, path) {
-    var parent = CreateXML(xmlFile)
+    var parent = createXML(xmlFile)
     var node = parent.selectSingleNode("book")
 
     if (!node) throw "<book> is missing"
     if (!path) throw "path is not specified"
 
     this.path = path
-    this.title = Text.Load(node.selectSingleNode("title"), path)
-    this.keywords = Text.Load(node.selectSingleNode("keywords"), path, { optional: true })
-    this.chapters = this.LoadChapters(node)
-    this.styles = this.LoadStyles(node.getAttribute("styles"))
+    this.title = Text.load(node.selectSingleNode("title"), path)
+    this.keywords = Text.load(node.selectSingleNode("keywords"), path, { optional: true })
+    this.chapters = this.loadChapters(node)
+    this.styles = this.loadStyles(node.getAttribute("styles"))
 }
 
 Book.prototype = Book
@@ -340,17 +357,17 @@ Book.prototype = Book
 //-----------------------------------------------------------------------------
 // Book.LoadStyles
 //-----------------------------------------------------------------------------
-function Book.LoadStyles(cssfile) {
-    var path = ResolvePath(cssfile, [this.path])
-    var text = GetFileContents(path)
+function Book.loadStyles(cssfile) {
+    var path = resolvePath(cssfile, [this.path])
+    var text = getFileContents(path)
 
-    return text
+    return text.replace(/[\x00-\x1F]/g, '')
 }
 
 //-----------------------------------------------------------------------------
 // Book.LoadChapters
 //-----------------------------------------------------------------------------
-function Book.LoadChapters(parent) {
+function Book.loadChapters(parent) {
     var nodes = parent.selectNodes("chapter")
     var chapters = []
 
@@ -378,7 +395,7 @@ function Book.LoadChapters(parent) {
 //  nlangs:int      the number of used languages
 //  clang[str]:int  the number of characters in this language
 //-----------------------------------------------------------------------------
-function Book.GetProgressInfo() {
+function Book.getProgressInfo() {
     var info = {
         total: 0,
         lang: {},
@@ -466,7 +483,7 @@ XMLDoc.prototype = XMLDoc
 //  opts.format     bool (false)
 //  opts.indent     int (0)
 //-----------------------------------------------------------------------------
-function XMLDoc.Serialize(puts, opts) {
+function XMLDoc.serialize(puts, opts) {
     var opts = opts || {}
 
     opts.indent = opts.indent || 0
@@ -484,7 +501,7 @@ function XMLDoc.Serialize(puts, opts) {
     }
 
     var putnode = function (node, indent) {
-        if (typeof (node) == 'string') {
+        if (typeof node == 'string') {
             if (opts.format)
                 putindent(indent)
 
@@ -552,7 +569,7 @@ Composer.prototype = Composer
 //-----------------------------------------------------------------------------
 // Composer.SaveAs
 //-----------------------------------------------------------------------------
-function Composer.SaveAs(HTMLFileName) {
+function Composer.saveAs(HTMLFileName) {
     this.targethtml = HTMLFileName
 
     var doc = new XMLDoc()
@@ -561,43 +578,44 @@ function Composer.SaveAs(HTMLFileName) {
     var headNode = new XMLNode('head')
     var bodyNode = new XMLNode('body')
 
-    doc.nodes.push('<!-- This file is generated by a script -->')
     doc.nodes.push('<!doctype html>')
     doc.nodes.push(htmlNode)
     htmlNode.push(headNode)
     htmlNode.push(bodyNode)
 
-    this.info = this.book.GetProgressInfo()
+    this.info = this.book.getProgressInfo()
 
     if (GlobalFlags.Debug)
-        this.WriteProgress(bodyNode)
+        this.writeProgress(bodyNode)
 
-    this.WriteContentTypeTag(headNode)
-    this.WriteBookTitle(headNode)
-    this.WriteStyleSheet(headNode)
-    this.WriteKeywords(headNode)
-    this.WriteChapters(bodyNode)
+    this.writeContentTypeTag(headNode)
+    this.writeBookTitle(headNode)
+    this.writeStyleSheet(headNode)
+    this.writeKeywords(headNode)
+    this.writeChapters(bodyNode)
 
     var file = new File(HTMLFileName, 'wt')
 
-    doc.Serialize(
-        function (s) { file.Write(s) },
-        { indent: 2, format: false })
-
-    file.Close()
+    try {
+        doc.serialize(
+            function (s) { file.write(s) },
+            { indent: 2, format: true })
+    } finally {
+        file.close()
+    }
 }
 
 //-----------------------------------------------------------------------------
 // Returns a string with the preferred translation.
 //-----------------------------------------------------------------------------
-function Composer.GetPreferredTranslation(text) {
-    return text.GetTranslation(this.preferredLang)
+function Composer.getPreferredTranslation(text) {
+    return text.getTranslation(this.preferredLang)
 }
 
 //-----------------------------------------------------------------------------
-// Composer.WriteProgress
+// Composer.writeProgress
 //-----------------------------------------------------------------------------
-function Composer.WriteProgress(parent) {
+function Composer.writeProgress(parent) {
     var info = this.info
     var node = new XMLNode("div", { 'class': 'progress' })
 
@@ -614,35 +632,31 @@ function Composer.WriteProgress(parent) {
 //-----------------------------------------------------------------------------
 // Composer.WriteKeywords
 //-----------------------------------------------------------------------------
-function Composer.WriteKeywords(parent) {
+function Composer.writeKeywords(parent) {
     if (this.book.keywords) {
         parent.push(
             new XMLNode("meta",
             {
                 "name": 'keywords',
-                "content": this.GetPreferredTranslation(this.book.keywords)
+                "content": this.getPreferredTranslation(this.book.keywords)
             })
         )
     }
 }
 
 //-----------------------------------------------------------------------------
-// Composer.WriteStyleSheet
+// Composer.writeStyleSheet
 //-----------------------------------------------------------------------------
-function Composer.WriteStyleSheet(parent) {
+function Composer.writeStyleSheet(parent) {
     var xml = new XMLNode("style")
-
-    xml.push("<!--\n")
-    xml.push(this.book.styles)
-    xml.push("-->")
-
+    xml.push("<!--" + this.book.styles + "-->")
     parent.push(xml)
 }
 
 //-----------------------------------------------------------------------------
-// Composer.WriteContentTypeTag
+// Composer.writeContentTypeTag
 //-----------------------------------------------------------------------------
-function Composer.WriteContentTypeTag(parent) {
+function Composer.writeContentTypeTag(parent) {
     parent.push(
         new XMLNode('meta',
         {
@@ -653,39 +667,39 @@ function Composer.WriteContentTypeTag(parent) {
 }
 
 //-----------------------------------------------------------------------------
-// Composer.WriteBookTitle
+// Composer.writeBookTitle
 //-----------------------------------------------------------------------------
-function Composer.WriteBookTitle(parent) {
+function Composer.writeBookTitle(parent) {
     var node = new XMLNode("title")
-    node.push(this.GetPreferredTranslation(this.book.title))
+    node.push(this.getPreferredTranslation(this.book.title))
     parent.push(node)
 }
 
 //-----------------------------------------------------------------------------
 // Composer.WriteChapters
 //-----------------------------------------------------------------------------
-function Composer.WriteChapters(parent) {
+function Composer.writeChapters(parent) {
     for (var i in this.book.chapters) {
         var chapter = this.book.chapters[i]
 
-        this.WriteChapterTitle(parent, chapter.title)
-        this.WriteParagraphs(parent, chapter.paragraphs)
+        this.writeChapterTitle(parent, chapter.title)
+        this.writeParagraphs(parent, chapter.paragraphs)
     }
 }
 
 //-----------------------------------------------------------------------------
-// Composer.WriteChapterTitle
+// Composer.writeChapterTitle
 //-----------------------------------------------------------------------------
-function Composer.WriteChapterTitle(parent, title) {
+function Composer.writeChapterTitle(parent, title) {
     var node = new XMLNode("h2")
-    node.push(this.GetPreferredTranslation(title))
+    node.push(this.getPreferredTranslation(title))
     parent.push(node)
 }
 
 //-----------------------------------------------------------------------------
-// Composer.WriteParagraphs
+// Composer.writeParagraphs
 //-----------------------------------------------------------------------------
-function Composer.WriteParagraphs(parent, paragraphs) {
+function Composer.writeParagraphs(parent, paragraphs) {
     var table = new XMLNode("table")
 
     for (var i = 0; i < paragraphs.length; i++) {
@@ -695,11 +709,11 @@ function Composer.WriteParagraphs(parent, paragraphs) {
         if (GlobalFlags.Debug)
             row.attributes.title = par.path
 
-        if (par.prototype == Text)
-            this.WriteLangViews(row, par.views)
-        else if (par.prototype == Picture) {
-            this.WritePicture(row, par)
-            this.CopyPicture(par)
+        if (par instanceof Text)
+            this.writeLangViews(row, par.views)
+        else if (par instanceof Picture) {
+            this.writePicture(row, par)
+            this.copyPicture(par)
         }
 
         table.push(row)
@@ -709,12 +723,12 @@ function Composer.WriteParagraphs(parent, paragraphs) {
 }
 
 //-----------------------------------------------------------------------------
-// Composer.WriteLangViews
+// Composer.writeLangViews
 //-----------------------------------------------------------------------------
-function Composer.WriteLangViews(parent, views) {
+function Composer.writeLangViews(parent, views) {
     for (var lang in this.langs) {
-        var text = this.ChooseTranslation(views, lang)
-        var str = text ? Text.Preprocess(text) : ""
+        var text = this.chooseTranslation(views, lang)
+        var str = text ? Text.preprocess(text) : ""
         var node = new XMLNode("td", { 'class': lang })
 
         if (GlobalFlags.Debug && text == "")
@@ -730,11 +744,12 @@ function Composer.WriteLangViews(parent, views) {
 // present, or finds the first non empty translation if a single translation is
 // shown.
 //-----------------------------------------------------------------------------
-function Composer.ChooseTranslation(views, lang) {
+function Composer.chooseTranslation(views, lang) {
     if (typeof this.nlangs == 'undefined') {
         this.nlangs = 0
-        for (var lang in this.langs)
-            this.nlangs++
+        for (var i in this.langs)
+            if (this.langs[i])
+                this.nlangs++
     }
 
     var text = views[lang]
@@ -754,7 +769,7 @@ function Composer.ChooseTranslation(views, lang) {
 //      tr      a <tr> tag inside <table>
 //      pic     a Picture object
 //-----------------------------------------------------------------------------
-function Composer.WritePicture(tr, pic) {
+function Composer.writePicture(tr, pic) {
     var img = new XMLNode("img", { src: pic.relsrc })
     var td = new XMLNode("td")
 
@@ -765,13 +780,11 @@ function Composer.WritePicture(tr, pic) {
 //-----------------------------------------------------------------------------
 // Copies a picture to the folder with the generated html file.
 //-----------------------------------------------------------------------------
-function Composer.CopyPicture(pic) {
+function Composer.copyPicture(pic) {
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
 
-    var html = fs.GetFile(this.targethtml)
-    var picxml = fs.GetFile(pic.path)
-    var srcpicpath = BuildPath([picxml.ParentFolder, pic.relsrc])
-    var dstpicpath = BuildPath([html.ParentFolder, pic.relsrc])
+    var srcpicpath = buildPath([fs.GetParentFolderName(pic.path), pic.relsrc])
+    var dstpicpath = buildPath([fs.GetParentFolderName(this.targethtml), pic.relsrc])
 
     fs.CopyFile(srcpicpath, dstpicpath)
 }
@@ -779,14 +792,14 @@ function Composer.CopyPicture(pic) {
 //-----------------------------------------------------------------------------
 // Tells whether a language should be written in the output.
 //-----------------------------------------------------------------------------
-function Composer.IsLangUsed(lang) {
+function Composer.isLangUsed(lang) {
     return !this.langs || !!this.langs[lang] || lang == 'any'
 }
 
 //-----------------------------------------------------------------------------
 // Translates a xml into a html book.
 //-----------------------------------------------------------------------------
-function Translate(bookxml, bookhtml, options) {
+function translate(bookxml, bookhtml, options) {
     var fs = WScript.CreateObject("Scripting.FileSystemObject")
     var path = fs.GetParentFolderName(bookxml)
 
@@ -798,41 +811,46 @@ function Translate(bookxml, bookhtml, options) {
     comp.langs = options.langs
     comp.preferredLang = options.preferredLang
 
-    CreateParentFolders(bookhtml)
-    comp.SaveAs(bookhtml)
+    createParentFolders(bookhtml)
+    comp.saveAs(bookhtml)
 }
 
 //-----------------------------------------------------------------------------
 // BuildBookName
 //-----------------------------------------------------------------------------
-function BuildBookName(t) {
-    var name = "book"
+function buildBookName(t) {
+    var name = ""
 
     for (var i in t.langs)
         name = name + "-" + i
 
-    return name
+    return name.substr(1)
 }
 
 //-----------------------------------------------------------------------------
 // Translates all books in a folder.
 //-----------------------------------------------------------------------------
-function TranslateAll(srcdir, resdir, translations) {
-    var bookdirs = GetSubFolders(srcdir)
+function translateAll(srcdir, resdir, translations) {
+    var bookdirs = getSubFolders(srcdir)
 
     for (var i in bookdirs) {
-        var bookxml = BuildPath([bookdirs[i].Path, "book.xml"])
-        var htmldir = BuildPath([resdir, bookdirs[i].Name])
+        var bookxml = buildPath([bookdirs[i].Path, "book.xml"])
+
+        // if the folder has no "book.xml" file, then it's not a book's translation
+        if (!fileExists(bookxml))
+            continue
+
+        var htmldir = buildPath([resdir, bookdirs[i].Name])
 
         for (var t in translations) {
-            var bookhtml = BuildPath([htmldir, BuildBookName(translations[t]) + ".html"])
-            Translate(bookxml, bookhtml, translations[t])
-            Println('created: ' + ResolvePath(bookhtml))
+            var bookhtml = buildPath([htmldir, buildBookName(translations[t]) + ".html"])
+            translate(bookxml, bookhtml, translations[t])
+            println('created: ' + resolvePath(bookhtml))
         }
     }
 }
 
-function Main() {
+function main() {
     var translations =
     [
         { langs: { en: true }, preferredLang: "en" },
@@ -840,19 +858,22 @@ function Main() {
         { langs: { en: true, ru: true }, preferredLang: "ru" }
     ]
 
-    TranslateAll("src/", "res/", translations)
+    translateAll("src/", "res/", translations)
 }
 
-function Exec(f, c) {
-    if (!c)
-        return f()
-
-    try {
-        return f()
+(function () {
+    var args = {
+        notrycatch: WScript.Arguments.Named('notrycatch')
     }
-    catch (e) {
-        WScript.StdErr.WriteLine(e)
-    }
-}
 
-Exec(Main, true)
+    if (args.notrycatch)
+        main()
+    else try {
+        main()
+    } catch (e) {
+        println(e)
+    }
+
+    println("Press Enter to exit...")
+    readln()
+})()
