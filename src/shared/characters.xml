@@ -24,8 +24,16 @@
     <view lang="ru">Сурья - Лорд Майтрейя, в настоящий момент Бодхисаттва, Верховный Учитель мира.</view>
   </text>
   <text>
-    <view lang="en">Manu - The Head of a Root-Race. If with a prefix, Root-Manu or Seed-Manu, a yet higher Official, presiding over a larger cycle of evolution - a Round or a Chain. The cognomen Vaivasvata is given in Hindu books both to the Root-Manu of our Chain and the Manu of the Aryan, or fifth, Root Race.</view>
-    <view lang="ru">Ману - Глава коренной расы. Более высокое звание, Коренной Ману, дано тому, кто главенствует на протяжении большего этапа эволюции называемого Раундом или Цепью. В индийских книгах как Коренной Ману так и Ману пятой коренной расы Арийцев одинаково называются Вайвасватой.</view>
+    <view lang="en">
+    Manu - The Head of a Root-Race. If with a prefix, Root-Manu or Seed-Manu, a yet higher Official,
+    presiding over a larger cycle of evolution - a Round or a Chain. The cognomen Vaivasvata is given
+    in Hindu books both to the Root-Manu of our Chain and the Manu of the Aryan, or fifth, Root Race.
+    </view>
+    <view lang="ru">
+    Ману - Глава коренной расы. Более высокое звание, Коренной Ману, дано тому, кто главенствует на
+    протяжении большего этапа эволюции называемого Раундом (Кругом) или Цепью. В индийских книгах как
+    Коренной Ману так и Ману пятой коренной расы Арийцев одинаково называются Вайвасватой.
+    </view>
   </text>
   <text>
     <view lang="en">Viraj - The Maha-Chohan, a high Official, of rank equal to that of a Manu or a Bodhisattva.</view>
@@ -77,7 +85,7 @@
   </text>
   <text>
     <view lang="en">Alba - Ethel Whyte</view>
-    <view lang="ru">Альба - Ethel Whyte</view>
+    <view lang="ru">Альба - Этель Вайт</view>
   </text>
   <text>
     <view lang="en">Albireo - Maria-Luisa Kirby</view>
@@ -89,18 +97,23 @@
   </text>
   <text>
     <view lang="en">Aletheia - John van Manen</view>
+    <view lang="ru">Алетция - Джон ван Манен</view>
   </text>
   <text>
     <view lang="en">Altair - Herbert Whyte</view>
+    <view lang="ru">Альтаир - Герберт Вайт</view>
   </text>
   <text>
     <view lang="en">Arcor - A. J. Wilson</view>
+    <view lang="ru">Аркор - Вильсон</view>
   </text>
   <text>
     <view lang="en">Aurora - Count Bubna-Licics</view>
+    <view lang="ru">Аврора - Count Bubba-Licics</view>
   </text>
   <text>
     <view lang="en">Capella - S. Maud Sharpe</view>
+    <view lang="ru">Капелла - Мауд Шарп</view>
   </text>
   <text>
     <view lang="en">Corona - Julius Caesar</view>
@@ -108,24 +121,31 @@
   </text>
   <text>
     <view lang="en">Crux - The Hon. Otway Cuffe</view>
+    <view lang="ru">Кракс - почтенный Отвэй Кафф</view>
   </text>
   <text>
     <view lang="en">Deneb - Lord Cochrane (Tenth Earl of Dundonald)</view>
+    <view lang="ru">Денеб - лорд Кохрейн (десятый граф Дандонелда)</view>
   </text>
   <text>
     <view lang="en">Eudoxia - Louisa Shaw</view>
+    <view lang="ru">Евдоксия - Луиза Шоу</view>
   </text>
   <text>
     <view lang="en">Fides - G. S. Arundale</view>
+    <view lang="ru">Файдс - Арундейл</view>
   </text>
   <text>
     <view lang="en">Gemini - E. Maud Green</view>
+    <view lang="ru">Гемини - Мауд Грин</view>
   </text>
   <text>
     <view lang="en">Hector - W. H. Kirby</view>
+    <view lang="ru">Гектор - Кирби</view>
   </text>
   <text>
     <view lang="en">Helios - Marie Russak</view>
+    <view lang="ru">Гелиос - Мария Русак</view>
   </text>
   <text>
     <view lang="en">Herakles - Annie Besant</view>
@@ -133,12 +153,15 @@
   </text>
   <text>
     <view lang="en">Leo - Fabrizio Ruspoli</view>
+    <view lang="ru">Лео - Фабрицио Русполи</view>
   </text>
   <text>
     <view lang="en">Lomia - J. I. Wedgwood</view>
+    <view lang="ru">Лумия - Веджвуд</view>
   </text>
   <text>
     <view lang="en">Lutetia - Charles Bradlaugh</view>
+    <view lang="ru">Лютеция - Чарльз Брадлаф</view>
   </text>
   <text>
     <view lang="en">Lyra - Lao-Tze</view>
@@ -146,36 +169,47 @@
   </text>
   <text>
     <view lang="en">Mira - Carl Holbrook</view>
+    <view lang="ru">Мира - Карл Холбрук</view>
   </text>
   <text>
     <view lang="en">Mizar - J. Nityananda</view>
+    <view lang="ru">Мицар - Нитинанда</view>
   </text>
   <text>
     <view lang="en">Mona - Piet Meuleman</view>
+    <view lang="ru">Мона - Пьер Мильман</view>
   </text>
   <text>
     <view lang="en">Norma - Margherita Ruspoli</view>
+    <view lang="ru">Норма - Маргарита Русполи</view>
   </text>
   <text>
     <view lang="en">Olympia - Damodar K. Mavalankar</view>
+    <view lang="ru">Олимпия - Дамодар Маваланкар</view>
   </text>
   <text>
     <view lang="en">Pallas - Plato</view>
+    <view lang="ru">Паллас - Плато</view>
   </text>
   <text>
     <view lang="en">Phocea - W. Q. Judge</view>
+    <view lang="ru">Фоция - Джадж</view>
   </text>
   <text>
     <view lang="en">Phoenix - T. Pascal</view>
+    <view lang="ru">Феникс - Паскаль</view>
   </text>
   <text>
     <view lang="en">Polaris - B. P. Wadia</view>
+    <view lang="ru">Полярис - Вадья</view>
   </text>
   <text>
     <view lang="en">Proteus - The Teshu Lama</view>
+    <view lang="ru">Протей - Тешу Лама</view>
   </text>
   <text>
     <view lang="en">Selene - C. Jinarajadasa</view>
+    <view lang="ru">Селена - К. Джинараджадаса</view>
   </text>
   <text>
     <view lang="en">Sirius - C. W. Leadbeater</view>
@@ -183,12 +217,15 @@
   </text>
   <text>
     <view lang="en">Siwa - T. Subba Rao</view>
+    <view lang="ru">Шива - Субба Роу</view>
   </text>
   <text>
     <view lang="en">Spica - Francesca Arundale</view>
+    <view lang="ru">Спика - Франциска Арундейл</view>
   </text>
   <text>
     <view lang="en">Taurus - Jerome Anderson</view>
+    <view lang="ru">Таурус - Жереми Андерсон</view>
   </text>
   <text>
     <view lang="en">Ulysses - H. S. Olcott</view>
@@ -200,5 +237,6 @@
   </text>
   <text>
     <view lang="en">Vesta - Minnie C. Holbrook</view>
+    <view lang="ru">Веста - Минни Хольбрук</view>
   </text>
 </body>
