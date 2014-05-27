@@ -13,27 +13,10 @@ td
     text-indent: 1em;
     text-align: justify;
     padding: 0.5em;
-    width: 50%;
 }
 
 .footer td
 {
     text-align: right;
     font-style: italic;
-}
-
-.progress
-{
-    position: absolute;
-    right: 10pt;
-    top: 10pt;
-    text-align: right;
-}
-
-.progress p
-{
-    display: inline;
-    margin-left: 2em;
-    color: lightgray;
-    font-size: 8pt;
 }
