@@ -15,7 +15,7 @@
     "xmldom": ""
   },
   "scripts": {
-    "pretest": "build --book src/loa --lang ru en > loa-ru-en.html",
+    "pretest": "node build --book src/loa --lang ru en > loa-ru-en.html"
   },
   "repository": {
     "type": "git",
