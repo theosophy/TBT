@@ -1,1 +1,0 @@
-cscript //NoLogo //X compile.js /notrycatch:yes

@@ -1,0 +1,32 @@
+{
+  "name": "TBT",
+  "description": "Theosophy Book Translations",
+  "homepage": "https://github.com/theosophy/TBT",
+  "keywords": [
+    "Theosophy",
+    "Book",
+    "Translations",
+    "Leadbeater",
+    "Beasant",
+    "Man: Whence, How and Whither",
+    "Lives of Alcyone"
+  ],
+  "devDependencies": {
+    "xmldom": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/theosophy/tbt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/theosophy/tbt/issues"
+  },
+  "readmeFilename": "README.md",
+  "gitHead": "cc7a91da13a747a3c4b710271f5f11bc73bf3937",
+  "main": "build.js",
+  "directories": {
+    "src": "src"
+  },
+  "author": "TBT",
+  "license": "Public Domain"
+}
