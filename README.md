@@ -1,0 +1,31 @@
+[![Build Status](https://travis-ci.org/theosophy/TBT.svg?branch=master)](https://travis-ci.org/theosophy/TBT)
+
+The translation of "Lives of Alcyone" (C.W.Leadbeater, A.W.Besant).
+
+If you want to translate a chapter of the book, follow these steps:
+
+1. Go to https://sites.google.com/site/livesofalcyone/ and find what
+   you want to translate. This source is not mandatory, but it's more
+   complete than other sources I could find.
+   
+2. For example you have chosen chapter "Life 15" to translate.
+   Create a file /src/loa/chapters/life15.xml and put the contents of the chapter
+   from the source to the created file. Use /src/loa/chapters/life1.xml
+   as an example.
+   
+3. Open /src/loa/book.xml and add a reference to the created file:
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <book title="Lives of Alcyone">
+            <chapter contents="chapters/note.xml"/>
+            <chapter contents="chapters/foreword.xml"/>
+            <chapter contents="chapters/intro.xml"/>
+            <chapter contents="chapters/life1.xml"/>
+            
+            <chapter contents="chapters/life15.xml"/>
+        </book>
+        
+4. Open /src/loa/chapters/life15.xml and add <view> tags with the translation.
+   Use /src/loa/chapters/life1.xml as an example.
+   
+5. Run compile.js - it will generate /res/loa/book.html with the book contents.
