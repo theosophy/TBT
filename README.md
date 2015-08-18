@@ -9,11 +9,11 @@ If you want to translate a chapter of the book, follow these steps:
    complete than other sources I could find.
    
 2. For example you have chosen chapter "Life 15" to translate.
-   Create a file /src/loa/chapters/life15.xml and put the contents of the chapter
-   from the source to the created file. Use /src/loa/chapters/life1.xml
+   Create a file `/src/loa/chapters/life15.xml` and put the contents of the chapter
+   from the source to the created file. Use `/src/loa/chapters/life1.xml`
    as an example.
    
-3. Open /src/loa/book.xml and add a reference to the created file:
+3. Open `/src/loa/book.xml` and add a reference to the created file:
 
         <?xml version="1.0" encoding="UTF-8"?>
         <book title="Lives of Alcyone">
@@ -25,7 +25,11 @@ If you want to translate a chapter of the book, follow these steps:
             <chapter contents="chapters/life15.xml"/>
         </book>
         
-4. Open /src/loa/chapters/life15.xml and add <view> tags with the translation.
-   Use /src/loa/chapters/life1.xml as an example.
+4. Open `/src/loa/chapters/life15.xml` and add `<view>` tags with the translation.
+   Use `/src/loa/chapters/life1.xml` as an example.
    
-5. Run compile.js - it will generate /res/loa/book.html with the book contents.
+5. Run `npm test` - it will compile the books.
+
+6. Publish the updated books at the site [repository](https://github.com/theosophy/theosophy.github.io).
+
+7. See the published version at [theosophy.github.io](http://theosophy.github.io/).
