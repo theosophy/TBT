@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/theosophy/TBT.svg?branch=master)](https://travis-ci.org/theosophy/TBT)
 
-Полный перевод книги "Человек: Откуда, как и Куда" ("Max: Whence, How and Whither").
+Полный перевод книги "Человек: Откуда, Как и Куда" ("Man: Whence, How and Whither").
 
 Неполный перевод книги "Жизни Алкиона" ("Lives of Alcyone").
 
