@@ -1,6 +1,10 @@
 [![Build Status](https://travis-ci.org/theosophy/TBT.svg?branch=master)](https://travis-ci.org/theosophy/TBT)
 
-The translation of "Lives of Alcyone" (C.W.Leadbeater, A.W.Besant).
+Полный перевод книги "Человек: Откуда, Как и Куда" ("Man: Whence, How and Whither").
+
+Неполный перевод книги "Жизни Алкиона" ("Lives of Alcyone").
+
+Переводы публикуются на http://theosophy.github.io/
 
 If you want to translate a chapter of the book, follow these steps:
 
