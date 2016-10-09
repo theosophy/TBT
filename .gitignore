@@ -1,7 +1,4 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/node_modules/xmldom
+﻿/node_modules/xmldom
 /loa.html
 /manwhw.html
+/node_modules/xmldom

@@ -1,6 +1,9 @@
-// example: node build --book src/loa --lang ru en
-
 'use strict';
+
+if (process.argv.length < 3) {
+    console.log('example: node build --book src/loa --lang ru en');
+    process.exit(0);
+}
 
 var fs = require('fs');
 var path = require('path');
@@ -119,17 +122,17 @@ Book.prototype.toString = function (langs) {
     return '<!doctype html>' +
         '<html>' +
         '<head>' +
-            '<meta http-equiv="Content-Type" content="text/html" charset="utf-8">' +
-            '<title>' + this.title.views[langs[0]] + '</title>' +
-            '<style>' + this.styles + '</style>' +
-            '<style>.timestamp { font-size:9pt; position:absolute; right:1em; top:1em; color:lightgray; }</style>' +
-            '<style>td { width: ' + (100 / langs.length) + '% }</style>' +
+        '<meta http-equiv="Content-Type" content="text/html" charset="utf-8">' +
+        '<title>' + this.title.views[langs[0]] + '</title>' +
+        '<style>' + this.styles + '</style>' +
+        '<style>.timestamp { font-size:9pt; position:absolute; right:1em; top:1em; color:lightgray; }</style>' +
+        '<style>td { width: ' + (100 / langs.length) + '% }</style>' +
         '</head>' +
         '<body>' +
-            '<div class="timestamp">' + new Date + '</div>' +
-            '<table>' +
-                joinItems(self.chapters, langs) +
-            '</table>' +
+        '<div class="timestamp">' + new Date + '</div>' +
+        '<table>' +
+        joinItems(self.chapters, langs) +
+        '</table>' +
         '</body>' +
         '</html>';
 };
@@ -163,7 +166,7 @@ function Text(root, dir) {
         this.views = arrayToMap(root.getElementsByTagName('view'), function (node) {
             this[node.getAttribute('lang')] = node.textContent
                 .trim()
-                .replace(/\s+[—-]+\s+/g, "&nbsp;&mdash;&nbsp;");
+                .replace(/\s+[ï¿½-]+\s+/g, "&nbsp;&mdash;&nbsp;");
         });
     }
 }
