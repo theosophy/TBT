@@ -12,7 +12,7 @@ If you want to translate a chapter of the book, follow these steps:
    you want to translate. This source is not mandatory, but it's more
    complete than other sources I could find.
    
-2. For example you have chosen chapter "Life 15" to translate.
+2. For example you have chosen chapter "Life 15" to translate. 
    Create a file `/src/loa/chapters/life15.xml` and put the contents of the chapter
    from the source to the created file. Use `/src/loa/chapters/life1.xml`
    as an example.
