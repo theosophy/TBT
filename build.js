@@ -131,6 +131,7 @@ Book.prototype.toString = function (langs) {
         '<body>' +
         '<div class="timestamp">' + new Date + '</div>' +
         '<table>' +
+        '<tr>' + langs.map(lang => '<td><h1>' + this.title.views[lang] + '</h1>') +
         joinItems(self.chapters, langs) +
         '</table>' +
         '</body>' +
