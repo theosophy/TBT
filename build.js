@@ -138,14 +138,14 @@ Book.prototype.toString = function (langs) {
         '</html>';
 };
 
-function Chapter(root, dir) {
+function Chapter(root, dir, href) {
     var ref = root.getAttribute('contents');
 
     if (ref) {
         ref = resolvePath(ref, [dir]);
-        Chapter.call(this, parseXmlFile(ref), path.dirname(ref));
+        Chapter.call(this, parseXmlFile(ref), path.dirname(ref), path.basename(ref, '.xml'));
     } else {
-        this.title = new Text(root.getElementsByTagName('title')[0], dir);
+        this.title = new Text(root.getElementsByTagName('title')[0], dir, href);
         this.paragraphs = [].map.call(root.getElementsByTagName('text'), function (node) {
             return new Text(node, dir);
         });
@@ -156,13 +156,14 @@ Chapter.prototype.toString = function (langs) {
     return this.title.toString(langs, 'h2') + joinItems(this.paragraphs, langs);
 };
 
-function Text(root, dir) {
+function Text(root, dir, href) {
     var ref = root.getAttribute('contents');
 
     if (ref) {
         ref = resolvePath(ref, [dir]);
         Text.call(this, parseXmlFile(ref), path.dirname(ref));
     } else {
+        this.href = href;
         this.style = root.getAttribute('class');
         this.views = arrayToMap(root.getElementsByTagName('view'), function (node) {
             this[node.getAttribute('lang')] = node.textContent
@@ -177,7 +178,14 @@ Text.prototype.toString = function (langs, tag) {
 
     langs.forEach(function (lang) {
         text = self.views[lang] || '';
-        html += '<td>' + (!tag ? text : '<' + tag + '>' + text + '</' + tag + '>') + '</td>';
+
+        if (self.href)
+            text = '<a href="#' + self.href + '">' + text + '</a>';
+
+        if (tag)
+            text = '<' + tag + '>' + text + '</' + tag + '>';
+
+        html += '<td>' + text + '</td>';
     });
 
     return '<tr' + (self.style ? ' class="' + self.style + '"' : '') + '>' + html + '</tr>';

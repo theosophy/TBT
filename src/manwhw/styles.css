@@ -3,6 +3,12 @@ h1, h2 { text-align: center; }
 
 div {}
 
+a {
+    text-decoration: none;
+    color: inherit;
+    cursor: default;
+}
+
 tr
 {
     vertical-align: top;

@@ -1,5 +1,6 @@
 {
-  "name": "TBT",
+  "name": "tbt",
+  "version": "1.0.0",
   "description": "Theosophy Book Translations",
   "homepage": "https://github.com/theosophy/TBT",
   "keywords": [
@@ -13,10 +14,7 @@
   ],
   "devDependencies": {
     "xmldom": ""
-  },
-  "scripts": {
-    "pretest": "node build --book src/loa --lang ru en > loa.html & node build --book src/manwhw --lang ru en > manwhw.html"
-  },
+  },  
   "repository": {
     "type": "git",
     "url": "git://github.com/theosophy/tbt.git"

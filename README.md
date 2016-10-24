@@ -32,7 +32,7 @@ If you want to translate a chapter of the book, follow these steps:
 4. Open `/src/loa/chapters/life15.xml` and add `<view>` tags with the translation.
    Use `/src/loa/chapters/life1.xml` as an example.
    
-5. Run `npm test` - it will compile the books.
+5. Run `make` - it will compile the books.
 
 6. Publish the updated books at the site [repository](https://github.com/theosophy/theosophy.github.io).
 
