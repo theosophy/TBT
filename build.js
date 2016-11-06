@@ -26,9 +26,11 @@ setTimeout(function () {
 
     const node = parseXmlFile(path.join(args.book, 'book.xml'));
     const book = new Book(node, args.book);
-    const html = book.toString(args.lang);
 
-    console.log(html);
+    if (args.format == 'md')
+        console.log(book.toMarkdown(args.lang));
+    else
+        console.log(book.toHTML(args.lang));
 });
 
 function parseArgs() {
@@ -110,7 +112,10 @@ class Book {
         this.chapters = [].map.call(root.getElementsByTagName('chapter'), node => new Chapter(node, dir));
     }
 
-    toString(langs) {
+    /**
+     * @param {string[]} langs e.g. ["en", "ru"]
+     */
+    toHTML(langs) {
         return '<!doctype html>'
             + '<html>'
             + '<head>'
@@ -121,17 +126,25 @@ class Book {
             + '<style>table { width: 100% }</style>'
             + '<style>td.done { background-color: #efe }</style>'
             + '<style>td.fail { background-color: #fee }</style>'
-            + '<style>td { width: ' + (100 / langs.length) + '% }</style>'            
+            + '<style>td { width: ' + (100 / langs.length) + '% }</style>'
             + '</head>'
             + `<body data-path="${this.path}" data-lang="${langs.join(' ')}">`
             + '<div class="timestamp">' + new Date().toJSON() + '</div>'
             + '<table>'
             + '<tr>' + langs.map(lang => '<td><h1>' + this.title.views[lang] + '</h1>')
             + '</table>'
-            + this.chapters.map(ch => ch.toString(langs)).join('')
+            + this.chapters.map(ch => ch.toHTML(langs)).join('')
             + '<script src="../editor/edit.js"></script>'
             + '</body>'
             + '</html>';
+    }
+
+    /**
+     * @param {string[]} langs e.g. ["en", "ru"]
+     */
+    toMarkdown(langs) {
+        return this.title.toMarkdown(langs, 1) + '\n'
+            + this.chapters.map(ch => ch.toMarkdown(langs)).join('\n');
     }
 }
 
@@ -149,11 +162,22 @@ class Chapter {
         this.paragraphs = [].map.call(root.getElementsByTagName('text'), node => new Text(node, dirname));
     }
 
-    toString(langs) {
+    /**
+     * @param {string[]} langs e.g. ["en", "ru"]
+     */
+    toHTML(langs) {
         return `<table data-path="${this.path}">`
-            + this.title.toString(langs, 'h2')
-            + this.paragraphs.map(p => p.toString(langs)).join('')
+            + this.title.toHTML(langs, 2)
+            + this.paragraphs.map(p => p.toHTML(langs)).join('')
             + '</table>';
+    }
+
+    /**
+     * @param {string[]} langs e.g. ["en", "ru"]
+     */
+    toMarkdown(langs) {
+        return this.title.toMarkdown(langs, 2)
+            + '\n' + this.paragraphs.map(p => p.toMarkdown(langs)).join('\n');
     }
 }
 
@@ -170,28 +194,53 @@ class Text {
         this.style = root.getAttribute('class');
         this.views = new function () {
             [].forEach.call(root.getElementsByTagName('view'), node => {
-                this[node.getAttribute('lang')] = node.textContent
-                    .trim()
-                    .replace(/\s+[�-]+\s+/g, "&nbsp;&mdash;&nbsp;");
+                this[node.getAttribute('lang')] = node.textContent.trim();
             });
         };
     }
 
-    toString(langs, tag) {
+    /**
+     * @param {string[]} langs e.g. ["en", "ru"]
+     * @param {number} level e.g. 1 for "h1" or 2 for "h2"
+     */
+    toHTML(langs, level) {
         var html = '';
 
         for (const lang of langs) {
             let text = this.views[lang] || '';
 
+            text = text.replace(/\s+[�-]+\s+/g, "&nbsp;&mdash;&nbsp;");
+
             if (this.href)
                 text = '<a href="#' + this.href + '">' + text + '</a>';
 
-            if (tag)
-                text = '<' + tag + '>' + text + '</' + tag + '>';
+            if (level)
+                text = '<h' + level + '>' + text + '</h' + level + '>';
 
             html += '<td>' + text + '</td>';
         }
 
         return '<tr' + (this.style ? ' class="' + this.style + '"' : '') + '>' + html + '</tr>';
+    }
+
+    /**
+     * @param {string[]} langs e.g. ["en", "ru"]
+     * @param {number} level e.g. 1 for "h1" or 2 for "h2"
+     */
+    toMarkdown(langs, level) {
+        if (!level && this.style == 'subtitle')
+            level = 3;
+
+        // pick the first available lang
+        for (const lang of langs) {
+            const text = this.views[lang];
+
+            if (!text)
+                continue;
+
+            return '#'.repeat(level || 0) + ' '
+                + (text || '').replace(/[\r\n]/gm, ' ').replace(/\s+/gm, ' ')
+                + '\n';
+        }
     }
 }
