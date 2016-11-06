@@ -10,7 +10,7 @@ var path = require('path');
 var xmldom = require('xmldom');
 
 setTimeout(function () {
-    var html, book, args = parseArgs();
+    const args = parseArgs();
 
     if (args.help)
         return printHelp();
@@ -24,8 +24,9 @@ setTimeout(function () {
     if (!args.book.length)
         throw new Error('--book is required');
 
-    book = new Book(parseXmlFile(path.join(args.book, 'book.xml')), args.book);
-    html = book.toString(args.lang);
+    const node = parseXmlFile(path.join(args.book, 'book.xml'));
+    const book = new Book(node, args.book);
+    const html = book.toString(args.lang);
 
     console.log(html);
 });
@@ -83,110 +84,114 @@ function resolvePath(file, dirs) {
     throw new Error(file + ' cannot be resolved against ' + dirs);
 }
 
+/**
+ * @param {string} file 
+ */
 function getFileContents(file) {
     return fs.readFileSync(file, 'utf8');
 }
 
-function arrayToMap(array, cb) {
-    var map = {};
-    [].forEach.call(array, function () {
-        cb.apply(map, arguments);
-    });
-    return map;
-}
-
-function joinItems(array) {
-    var args = [].slice.call(arguments, 1);
-    return array.map(function (v) {
-        return v.toString.apply(v, args);
-    }).join('');
-}
-
+/**
+ * @param {string} file 
+ */
 function parseXmlFile(file) {
-    var document = new xmldom.DOMParser().parseFromString(getFileContents(file));
+    const text = getFileContents(file);
+    const parser = new xmldom.DOMParser();
+    const document = parser.parseFromString(text);
     return document.documentElement;
 }
 
-function Book(root, dir) {
-    this.title = new Text(root.getElementsByTagName('title')[0], dir);
-    this.keywords = new Text(root.getElementsByTagName('keywords')[0], dir);
-    this.styles = getFileContents(resolvePath(root.getAttribute('styles'), [dir])).replace(/[\x00-\x1F]/g, '');
-    this.chapters = [].map.call(root.getElementsByTagName('chapter'), function (node) {
-        return new Chapter(node, dir);
-    });
-}
+class Book {
+    constructor(root, dir) {
+        this.path = dir;
+        this.title = new Text(root.getElementsByTagName('title')[0], dir);
+        this.keywords = new Text(root.getElementsByTagName('keywords')[0], dir);
+        this.styles = getFileContents(resolvePath(root.getAttribute('styles'), [dir])).replace(/[\x00-\x1F]/g, '');
+        this.chapters = [].map.call(root.getElementsByTagName('chapter'), node => new Chapter(node, dir));
+    }
 
-Book.prototype.toString = function (langs) {
-    var self = this;
-
-    return '<!doctype html>' +
-        '<html>' +
-        '<head>' +
-        '<meta http-equiv="Content-Type" content="text/html" charset="utf-8">' +
-        '<title>' + this.title.views[langs[0]] + '</title>' +
-        '<style>' + this.styles + '</style>' +
-        '<style>.timestamp { font-size:9pt; position:absolute; right:1em; top:1em; color:lightgray; }</style>' +
-        '<style>td { width: ' + (100 / langs.length) + '% }</style>' +
-        '</head>' +
-        '<body>' +
-        '<div class="timestamp">' + new Date + '</div>' +
-        '<table>' +
-        '<tr>' + langs.map(lang => '<td><h1>' + this.title.views[lang] + '</h1>') +
-        joinItems(self.chapters, langs) +
-        '</table>' +
-        '</body>' +
-        '</html>';
-};
-
-function Chapter(root, dir, href) {
-    var ref = root.getAttribute('contents');
-
-    if (ref) {
-        ref = resolvePath(ref, [dir]);
-        Chapter.call(this, parseXmlFile(ref), path.dirname(ref), path.basename(ref, '.xml'));
-    } else {
-        this.title = new Text(root.getElementsByTagName('title')[0], dir, href);
-        this.paragraphs = [].map.call(root.getElementsByTagName('text'), function (node) {
-            return new Text(node, dir);
-        });
+    toString(langs) {
+        return '<!doctype html>'
+            + '<html>'
+            + '<head>'
+            + '<meta http-equiv="Content-Type" content="text/html" charset="utf-8">'
+            + '<title>' + this.title.views[langs[0]] + '</title>'
+            + '<style>' + this.styles + '</style>'
+            + '<style>.timestamp { font-size:9pt; position:absolute; right:1em; top:1em; color:lightgray; }</style>'
+            + '<style>table { width: 100% }</style>'
+            + '<style>td.done { background-color: #efe }</style>'
+            + '<style>td.fail { background-color: #fee }</style>'
+            + '<style>td { width: ' + (100 / langs.length) + '% }</style>'            
+            + '</head>'
+            + `<body data-path="${this.path}" data-lang="${langs.join(' ')}">`
+            + '<div class="timestamp">' + new Date().toJSON() + '</div>'
+            + '<table>'
+            + '<tr>' + langs.map(lang => '<td><h1>' + this.title.views[lang] + '</h1>')
+            + '</table>'
+            + this.chapters.map(ch => ch.toString(langs)).join('')
+            + '<script src="../editor/edit.js"></script>'
+            + '</body>'
+            + '</html>';
     }
 }
 
-Chapter.prototype.toString = function (langs) {
-    return this.title.toString(langs, 'h2') + joinItems(this.paragraphs, langs);
-};
+class Chapter {
+    constructor(xml, dir) {
+        const rel = xml.getAttribute('contents');
+        const ref = resolvePath(rel, [dir]);
 
-function Text(root, dir, href) {
-    var ref = root.getAttribute('contents');
+        const root = parseXmlFile(ref);
+        const dirname = path.dirname(ref);
+        const href = path.basename(ref, '.xml');
 
-    if (ref) {
-        ref = resolvePath(ref, [dir]);
-        Text.call(this, parseXmlFile(ref), path.dirname(ref));
-    } else {
+        this.path = rel;
+        this.title = new Text(root.getElementsByTagName('title')[0], dirname, href);
+        this.paragraphs = [].map.call(root.getElementsByTagName('text'), node => new Text(node, dirname));
+    }
+
+    toString(langs) {
+        return `<table data-path="${this.path}">`
+            + this.title.toString(langs, 'h2')
+            + this.paragraphs.map(p => p.toString(langs)).join('')
+            + '</table>';
+    }
+}
+
+class Text {
+    constructor(root, dir, href) {
+        var ref = root.getAttribute('contents');
+
+        if (ref) {
+            ref = resolvePath(ref, [dir]);
+            return new Text(parseXmlFile(ref), path.dirname(ref));
+        }
+
         this.href = href;
         this.style = root.getAttribute('class');
-        this.views = arrayToMap(root.getElementsByTagName('view'), function (node) {
-            this[node.getAttribute('lang')] = node.textContent
-                .trim()
-                .replace(/\s+[�-]+\s+/g, "&nbsp;&mdash;&nbsp;");
-        });
+        this.views = new function () {
+            [].forEach.call(root.getElementsByTagName('view'), node => {
+                this[node.getAttribute('lang')] = node.textContent
+                    .trim()
+                    .replace(/\s+[�-]+\s+/g, "&nbsp;&mdash;&nbsp;");
+            });
+        };
+    }
+
+    toString(langs, tag) {
+        var html = '';
+
+        for (const lang of langs) {
+            let text = this.views[lang] || '';
+
+            if (this.href)
+                text = '<a href="#' + this.href + '">' + text + '</a>';
+
+            if (tag)
+                text = '<' + tag + '>' + text + '</' + tag + '>';
+
+            html += '<td>' + text + '</td>';
+        }
+
+        return '<tr' + (this.style ? ' class="' + this.style + '"' : '') + '>' + html + '</tr>';
     }
 }
-
-Text.prototype.toString = function (langs, tag) {
-    var lang, text, html = '', self = this;
-
-    langs.forEach(function (lang) {
-        text = self.views[lang] || '';
-
-        if (self.href)
-            text = '<a href="#' + self.href + '">' + text + '</a>';
-
-        if (tag)
-            text = '<' + tag + '>' + text + '</' + tag + '>';
-
-        html += '<td>' + text + '</td>';
-    });
-
-    return '<tr' + (self.style ? ' class="' + self.style + '"' : '') + '>' + html + '</tr>';
-};

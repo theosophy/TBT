@@ -13,7 +13,8 @@
     "Lives of Alcyone"
   ],
   "devDependencies": {
-    "xmldom": ""
+    "@types/node": "latest",
+    "xmldom": "latest"
   },  
   "repository": {
     "type": "git",

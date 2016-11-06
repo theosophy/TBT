@@ -1,7 +1,9 @@
-﻿/node_modules/xmldom
+﻿/node_modules
+/editor/node_modules
 /loa.html
 /manwhw.html
-/node_modules/xmldom
+/node_modules
 /manwhw-ru.html
 /loa-ru.html
 /bin
+
